@@ -61,6 +61,25 @@ export interface GenerationRequest {
   mode: GenerationMode;
 }
 
+export interface PipelineTrace {
+  request_hash: string;
+  route: string;
+  mode: GenerationMode;
+  ml_execution: boolean;
+  stages: {
+    stage_id: string;
+    label: string;
+    status: string;
+    notes: string[];
+  }[];
+  product_preservation: {
+    freeze_core_pixels: boolean;
+    destructive_diffusion_allowed: boolean;
+    notes: string[];
+  };
+  next_real_stage: string;
+}
+
 export interface PipelineRoute {
   name: string;
   engine: string;

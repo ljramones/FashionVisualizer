@@ -12,7 +12,7 @@ export default function WorkflowInspector({ recipe, entry }: WorkflowInspectorPr
       <dl>
         <div>
           <dt>Recipe Hash</dt>
-          <dd>{recipe?.request_hash ?? "not compiled"}</dd>
+          <dd>{recipe?.request_hash ?? entry?.recipe_hash ?? "not compiled"}</dd>
         </div>
         <div>
           <dt>Selected Route</dt>

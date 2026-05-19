@@ -36,6 +36,12 @@ python scripts/benchmark_models.py
 python scripts/generate_placeholder_assets.py
 ```
 
+Run the golden demo:
+
+```bash
+python scripts/run_golden_demo.py
+```
+
 Run frontend:
 
 ```bash

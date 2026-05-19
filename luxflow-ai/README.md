@@ -78,6 +78,13 @@ The MVP includes handbag metadata, synthetic or licensed model profiles, declara
 - `scripts/`: seed, placeholder generation, and benchmark helpers.
 - `workflows/`: future Diffusers and ComfyUI workflow notes.
 
+Key docs:
+
+- `docs/current_status.md`: implemented vs. deferred capabilities.
+- `docs/pipeline.md`: current placeholder artifact lifecycle.
+- `docs/product_preservation.md`: product-lock placeholder policy.
+- `docs/local_execution.md`: local setup and execution notes.
+
 ## Run Backend
 
 ```bash
@@ -109,6 +116,42 @@ npm run dev
 ```
 
 Set `VITE_API_BASE_URL=http://localhost:8000` in `frontend/.env` if needed.
+
+## Run the Golden Demo
+
+The canonical demo request is stored at `assets/demo/golden_recipe.json`.
+
+Start the backend:
+
+```bash
+cd luxflow-ai
+make backend
+```
+
+Start the frontend:
+
+```bash
+cd luxflow-ai/frontend
+npm run dev
+```
+
+In Workflow Mode, use `Load Golden Demo` to populate the form and `Run Golden Demo` to create artifacts.
+
+Run from CLI:
+
+```bash
+cd luxflow-ai
+python scripts/run_golden_demo.py
+```
+
+Run through the API:
+
+```bash
+curl http://127.0.0.1:8000/demo/golden-recipe
+curl -X POST http://127.0.0.1:8000/demo/run-golden
+```
+
+The demo creates deterministic local artifacts under `assets/outputs/{request_hash}/` and serves them through `/static/assets/outputs/{request_hash}/...`. It does not run ML or generate a real video.
 
 ## Example Scene Recipe
 

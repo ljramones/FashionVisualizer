@@ -14,6 +14,7 @@ from backend.app.contracts import (
     SceneRecipe,
     SystemCapabilities,
 )
+from backend.app.demo import load_golden_generation_request
 from backend.app.pipeline.handbag_pipeline import run_handbag_pipeline
 from backend.app.recipes.scene_recipe_compiler import compile_scene_recipe
 from backend.app.registry.asset_registry import (
@@ -114,3 +115,13 @@ def generate(request: GenerationRequest) -> CatalogEntry:
             status="stub",
         )
     return run_handbag_pipeline(recipe)
+
+
+@app.get("/demo/golden-recipe", response_model=GenerationRequest)
+def demo_golden_recipe() -> GenerationRequest:
+    return load_golden_generation_request()
+
+
+@app.post("/demo/run-golden", response_model=CatalogEntry)
+def demo_run_golden() -> CatalogEntry:
+    return generate(load_golden_generation_request())

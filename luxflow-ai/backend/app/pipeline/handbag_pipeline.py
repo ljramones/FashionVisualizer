@@ -84,18 +84,58 @@ def run_handbag_pipeline(recipe: SceneRecipe, output_root: Path | None = None) -
 
     trace = {
         "request_hash": recipe.request_hash,
-        "route": route.model_dump(mode="json"),
-        "product_freeze_policy": freeze_policy,
+        "route": route.name,
+        "route_detail": route.model_dump(mode="json"),
+        "mode": recipe.mode.value,
+        "ml_execution": False,
+        "product_preservation": freeze_policy,
         "stages": [
-            {"name": "recipe_compiled", "status": "complete"},
-            {"name": "hero_still_placeholder_rendered", "status": "complete"},
-            {"name": "product_locked_composite_placeholder_rendered", "status": "complete"},
-            {"name": "thumbnail_rendered", "status": "complete"},
-            {"name": "video_placeholder_written", "status": "complete"},
-            {"name": "eval_completed", "status": "complete"},
-            {"name": "catalog_entry_written", "status": "complete"},
+            {
+                "stage_id": "recipe_compiled",
+                "label": "Scene recipe compiled",
+                "status": "completed",
+                "notes": ["Resolved product, model, location, and action metadata."],
+            },
+            {
+                "stage_id": "hero_still_placeholder_rendered",
+                "label": "Hero still placeholder rendered",
+                "status": "completed",
+                "notes": ["Pillow placeholder image written; no ML model was run."],
+            },
+            {
+                "stage_id": "product_locked_composite_placeholder_rendered",
+                "label": "Product-locked composite placeholder rendered",
+                "status": "completed",
+                "notes": ["Product lock layer is represented visually and in metadata."],
+            },
+            {
+                "stage_id": "thumbnail_rendered",
+                "label": "Thumbnail rendered",
+                "status": "completed",
+                "notes": ["Thumbnail derived from the product-locked composite."],
+            },
+            {
+                "stage_id": "video_placeholder_written",
+                "label": "Video placeholder metadata written",
+                "status": "completed",
+                "notes": ["No playable video was produced in this pass."],
+            },
+            {
+                "stage_id": "eval_completed",
+                "label": "Placeholder evaluation completed",
+                "status": "completed",
+                "notes": ["Prompt adherence remains unmeasured without a vision model."],
+            },
+            {
+                "stage_id": "catalog_entry_written",
+                "label": "Catalog entry metadata written",
+                "status": "completed",
+                "notes": ["Catalog entry JSON records all local artifact references."],
+            },
         ],
-        "note": "No ML model was run; artifacts are deterministic Pillow placeholders.",
+        "next_real_stage": (
+            "Replace hero_still placeholder renderer with local image-generation route"
+        ),
     }
     store.write_json("pipeline_trace.json", trace)
     for artifact in entry.artifacts:

@@ -1,4 +1,4 @@
-.PHONY: backend frontend test lint seed tree
+.PHONY: backend frontend test lint seed demo tree
 
 PYTHON ?= .venv/bin/python
 UVICORN ?= .venv/bin/uvicorn
@@ -20,6 +20,9 @@ lint:
 
 seed:
 	$(PYTHON) scripts/seed_sample_catalog.py
+
+demo:
+	$(PYTHON) scripts/run_golden_demo.py
 
 tree:
 	find . -maxdepth 4 -type f | sort

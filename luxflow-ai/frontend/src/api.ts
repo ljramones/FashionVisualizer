@@ -5,6 +5,7 @@ import type {
   GenerationRequest,
   LocationRef,
   ModelProfile,
+  PipelineTrace,
   ProductRef,
   SceneRecipe
 } from "./types/catalog";
@@ -41,6 +42,14 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+export async function getBackendJson<T>(url: string): Promise<T> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`GET ${url} failed: ${response.status}`);
+  }
+  return response.json() as Promise<T>;
+}
+
 export const api = {
   catalog: () => getJson<CatalogResponse>("/catalog"),
   products: () => getJson<ProductRef[]>("/assets/products"),
@@ -48,5 +57,8 @@ export const api = {
   locations: () => getJson<LocationRef[]>("/assets/locations"),
   actions: () => getJson<ActionRef[]>("/assets/actions"),
   compileRecipe: (request: GenerationRequest) => postJson<SceneRecipe>("/recipes/compile", request),
-  generateStub: (request: GenerationRequest) => postJson<CatalogEntry>("/generate", request)
+  generateStub: (request: GenerationRequest) => postJson<CatalogEntry>("/generate", request),
+  goldenRecipe: () => getJson<GenerationRequest>("/demo/golden-recipe"),
+  runGoldenDemo: () => postJson<CatalogEntry>("/demo/run-golden", {}),
+  pipelineTrace: (url: string) => getBackendJson<PipelineTrace>(url)
 };

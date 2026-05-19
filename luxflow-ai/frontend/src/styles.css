@@ -95,7 +95,8 @@ main {
 .inspector,
 .json-panel,
 .eval-panel,
-.artifact-preview {
+.artifact-preview,
+.trace-viewer {
   background: #fff;
   border: 1px solid #ded9ce;
   border-radius: 8px;
@@ -128,7 +129,8 @@ main {
 .inspector,
 .json-panel,
 .eval-panel,
-.artifact-preview {
+.artifact-preview,
+.trace-viewer {
   padding: 18px;
 }
 
@@ -137,7 +139,8 @@ main {
 .inspector h3,
 .json-panel h3,
 .eval-panel h3,
-.artifact-preview h3 {
+.artifact-preview h3,
+.trace-viewer h3 {
   margin-top: 0;
 }
 
@@ -242,6 +245,65 @@ dd {
   gap: 4px;
   margin-top: 16px;
   padding: 12px;
+}
+
+.metadata-links {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.metadata-links div {
+  display: grid;
+  gap: 2px;
+}
+
+.demo-panel {
+  background: #f6f4ef;
+  border: 1px solid #ded9ce;
+  border-radius: 6px;
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 12px;
+}
+
+.demo-panel span,
+.demo-message {
+  color: #656c75;
+}
+
+.stage-list {
+  display: grid;
+  gap: 10px;
+  padding-left: 20px;
+}
+
+.stage-list li {
+  padding-left: 4px;
+}
+
+.stage-list span,
+.stage-list small,
+.preservation-box span,
+.preservation-box small,
+.next-stage {
+  color: #656c75;
+  display: block;
+  margin-top: 3px;
+}
+
+.preservation-box {
+  background: #f6f4ef;
+  border: 1px solid #ded9ce;
+  border-radius: 6px;
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+}
+
+.next-stage {
+  font-weight: 600;
 }
 
 .json-panel pre {

@@ -16,6 +16,7 @@ Current status:
 - Recipe compilation is implemented.
 - Route selection is implemented as a deterministic stub.
 - `POST /generate` writes artifacts under `assets/outputs/{request_hash}/`.
+- `POST /demo/run-golden` runs the canonical golden recipe.
 - `hero_still.png`, `product_locked_composite.png`, and `thumbnail.png` are generated with Pillow.
 - `final_video_placeholder.json` is written instead of a real video.
 - `catalog_entry.json` and `pipeline_trace.json` record the artifact lifecycle.

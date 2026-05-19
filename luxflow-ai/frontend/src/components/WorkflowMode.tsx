@@ -13,6 +13,7 @@ import type {
 } from "../types/catalog";
 import EvalPanel from "./EvalPanel";
 import ArtifactPreview from "./ArtifactPreview";
+import PipelineTraceViewer from "./PipelineTraceViewer";
 import RecipeViewer from "./RecipeViewer";
 import WorkflowInspector from "./WorkflowInspector";
 
@@ -27,6 +28,7 @@ export default function WorkflowMode() {
   const [recipe, setRecipe] = useState<SceneRecipe | null>(null);
   const [entry, setEntry] = useState<CatalogEntry | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [demoMessage, setDemoMessage] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([api.products(), api.models(), api.locations(), api.actions()])
@@ -65,21 +67,78 @@ export default function WorkflowMode() {
   );
 
   async function compile() {
-    setError(null);
-    setEntry(null);
-    setRecipe(await api.compileRecipe(request));
+    try {
+      setError(null);
+      setEntry(null);
+      setRecipe(await api.compileRecipe(request));
+    } catch (err) {
+      setError((err as Error).message);
+    }
   }
 
   async function generate() {
-    setError(null);
-    const generated = await api.generateStub(request);
-    setEntry(generated);
+    try {
+      setError(null);
+      setDemoMessage(null);
+      const generated = await api.generateStub(request);
+      setEntry(generated);
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  }
+
+  function applyRequest(nextRequest: GenerationRequest) {
+    setProductId(nextRequest.product_id);
+    setModelId(nextRequest.model_id);
+    setLocationId(nextRequest.location_id);
+    setActionId(nextRequest.action_id);
+    setSeed(nextRequest.seed);
+    setAspectRatio(nextRequest.aspect_ratio);
+    setMode(nextRequest.mode);
+  }
+
+  async function loadGoldenDemo() {
+    try {
+      setError(null);
+      setEntry(null);
+      const golden = await api.goldenRecipe();
+      applyRequest(golden);
+      setRecipe(await api.compileRecipe(golden));
+      setDemoMessage("Golden demo loaded: black bag, hotel lobby, walking action, preview mode.");
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  }
+
+  async function runGoldenDemo() {
+    try {
+      setError(null);
+      const golden = await api.goldenRecipe();
+      applyRequest(golden);
+      setRecipe(await api.compileRecipe(golden));
+      setEntry(await api.runGoldenDemo());
+      setDemoMessage("Golden demo generated deterministic placeholder artifacts.");
+    } catch (err) {
+      setError((err as Error).message);
+    }
   }
 
   return (
     <section className="workflow-layout">
       <form className="control-panel" onSubmit={(event) => event.preventDefault()}>
         <h2>Workflow</h2>
+        <div className="demo-panel">
+          <strong>Golden demo</strong>
+          <span>Canonical non-ML handbag workflow for review and demos.</span>
+          <div className="button-row">
+            <button type="button" onClick={loadGoldenDemo}>
+              Load Golden Demo
+            </button>
+            <button type="button" onClick={runGoldenDemo}>
+              Run Golden Demo
+            </button>
+          </div>
+        </div>
         <Select label="Product" value={productId} onChange={setProductId} options={products.map(toOption)} />
         <Select label="Model" value={modelId} onChange={setModelId} options={models.map((item) => ({ id: item.id, label: item.display_name }))} />
         <Select label="Location" value={locationId} onChange={setLocationId} options={locations.map(toOption)} />
@@ -98,10 +157,12 @@ export default function WorkflowMode() {
             Generate Stub
           </button>
         </div>
+        {demoMessage ? <p className="demo-message">{demoMessage}</p> : null}
         {error ? <p className="error">{error}</p> : null}
       </form>
       <div className="workflow-results">
         <ArtifactPreview entry={entry} />
+        <PipelineTraceViewer entry={entry} />
         <WorkflowInspector recipe={recipe} entry={entry} />
         <RecipeViewer title="SceneRecipe JSON" data={recipe} />
         <RecipeViewer title="CatalogEntry JSON" data={entry} />
