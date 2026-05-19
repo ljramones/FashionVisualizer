@@ -1,7 +1,13 @@
 from pathlib import Path
 
+from backend.app.config import settings
 from backend.app.contracts import ArtifactRef, CatalogEntry, EvalResult, SceneRecipe
 from backend.app.eval.metrics import evaluate_catalog_entry
+from backend.app.generation.diffusers_hero_still import (
+    GenerationResult,
+    generate_hero_still_with_diffusers,
+    resolve_device,
+)
 from backend.app.pipeline.artifact_store import ArtifactStore
 from backend.app.pipeline.placeholder_render import (
     render_hero_still_placeholder,
@@ -23,6 +29,50 @@ def _artifact_ref(store: ArtifactStore, kind: str, path: Path, mime_type: str) -
     )
 
 
+def _render_hero_still(recipe: SceneRecipe, hero_path: Path) -> tuple[Path, dict[str, object], str]:
+    device = resolve_device()
+    metadata: dict[str, object] = {
+        "backend_requested": settings.image_generation_backend,
+        "real_generation_enabled": settings.enable_real_image_generation,
+        "used_real_generation": False,
+        "model_id": settings.image_model_id,
+        "device": device,
+        "fallback_used": True,
+        "notes": [],
+    }
+
+    if not settings.enable_real_image_generation:
+        render_hero_still_placeholder(recipe, hero_path)
+        metadata["notes"] = ["Real image generation disabled; rendered placeholder hero still."]
+        return hero_path, metadata, "Hero still placeholder rendered"
+
+    if settings.image_generation_backend != "diffusers":
+        render_hero_still_placeholder(recipe, hero_path)
+        metadata["notes"] = [
+            f"Unsupported image generation backend: {settings.image_generation_backend}.",
+            "Rendered placeholder hero still.",
+        ]
+        return hero_path, metadata, "Hero still placeholder rendered"
+
+    result: GenerationResult = generate_hero_still_with_diffusers(recipe, hero_path)
+    metadata.update(
+        {
+            "used_real_generation": result.success,
+            "model_id": result.model_id,
+            "device": result.device,
+            "fallback_used": not result.success,
+            "notes": result.notes,
+            "error": result.error,
+        }
+    )
+
+    if result.success and result.output_path is not None:
+        return result.output_path, metadata, "Real hero still generated with Diffusers"
+
+    render_hero_still_placeholder(recipe, hero_path)
+    return hero_path, metadata, "Hero still placeholder rendered"
+
+
 def run_handbag_pipeline(recipe: SceneRecipe, output_root: Path | None = None) -> CatalogEntry:
     """Run a deterministic placeholder artifact pipeline without invoking ML models."""
 
@@ -30,7 +80,10 @@ def run_handbag_pipeline(recipe: SceneRecipe, output_root: Path | None = None) -
     store = ArtifactStore(recipe.request_hash, output_root=output_root)
     freeze_policy = build_product_freeze_policy(recipe.product)
 
-    hero_path = render_hero_still_placeholder(recipe, store.path_for("hero_still.png"))
+    hero_path, hero_generation_metadata, hero_stage_label = _render_hero_still(
+        recipe,
+        store.path_for("hero_still.png"),
+    )
     composite_path = render_product_locked_composite_placeholder(
         recipe,
         store.path_for("product_locked_composite.png"),
@@ -87,7 +140,8 @@ def run_handbag_pipeline(recipe: SceneRecipe, output_root: Path | None = None) -
         "route": route.name,
         "route_detail": route.model_dump(mode="json"),
         "mode": recipe.mode.value,
-        "ml_execution": False,
+        "ml_execution": bool(hero_generation_metadata["used_real_generation"]),
+        "hero_still_generation": hero_generation_metadata,
         "product_preservation": freeze_policy,
         "stages": [
             {
@@ -98,9 +152,9 @@ def run_handbag_pipeline(recipe: SceneRecipe, output_root: Path | None = None) -
             },
             {
                 "stage_id": "hero_still_placeholder_rendered",
-                "label": "Hero still placeholder rendered",
+                "label": hero_stage_label,
                 "status": "completed",
-                "notes": ["Pillow placeholder image written; no ML model was run."],
+                "notes": hero_generation_metadata["notes"],
             },
             {
                 "stage_id": "product_locked_composite_placeholder_rendered",

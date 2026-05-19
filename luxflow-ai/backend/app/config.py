@@ -12,6 +12,14 @@ class Settings(BaseSettings):
     catalog_path: Path = Path("assets/catalog/sample_catalog.json")
     database_url: str = "sqlite:///./luxflow.db"
     enable_hosted_fallback: bool = False
+    enable_real_image_generation: bool = False
+    image_generation_backend: str = "diffusers"
+    image_model_id: str = "black-forest-labs/FLUX.1-schnell"
+    image_device: str = "auto"
+    image_width: int = 1024
+    image_height: int = 1024
+    image_steps: int = 4
+    image_guidance_scale: float = 0.0
 
     model_config = SettingsConfigDict(env_prefix="LUXFLOW_", env_file=".env", extra="ignore")
 

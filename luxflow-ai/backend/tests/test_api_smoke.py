@@ -37,5 +37,5 @@ def test_compile_and_generate_endpoints_return_json() -> None:
     assert compile_response.status_code == 200
     assert compile_response.json()["request_hash"]
     assert generate_response.status_code == 200
-    assert generate_response.json()["route"]["name"] == "handbag_diffusers_reference_stub"
+    assert generate_response.json()["route"]["name"] == "handbag_diffusers_reference"
     assert generate_response.json()["status"] == "stub"

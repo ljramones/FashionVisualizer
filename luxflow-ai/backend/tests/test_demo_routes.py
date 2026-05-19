@@ -35,4 +35,4 @@ def test_run_golden_demo_creates_artifacts(tmp_path, monkeypatch) -> None:
     assert Path(artifacts["thumbnail"]["path"]).exists()
     assert Path(artifacts["pipeline_trace"]["path"]).exists()
     assert artifacts["thumbnail"]["static_url"] is None
-    assert entry["route"]["name"] == "handbag_diffusers_reference_stub"
+    assert entry["route"]["name"] == "handbag_diffusers_reference"

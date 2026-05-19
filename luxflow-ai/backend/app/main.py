@@ -12,7 +12,6 @@ from backend.app.contracts import (
     ModelProfile,
     ProductRef,
     SceneRecipe,
-    SystemCapabilities,
 )
 from backend.app.demo import load_golden_generation_request
 from backend.app.pipeline.handbag_pipeline import run_handbag_pipeline
@@ -53,8 +52,8 @@ def health() -> dict[str, str]:
     return {"status": "ok", "service": "luxflow-ai"}
 
 
-@app.get("/system/capabilities", response_model=SystemCapabilities)
-def system_capabilities() -> SystemCapabilities:
+@app.get("/system/capabilities")
+def system_capabilities() -> dict[str, object]:
     return get_system_capabilities()
 
 

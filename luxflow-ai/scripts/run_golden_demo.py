@@ -1,3 +1,7 @@
+import json
+import sys
+
+from backend.app import config
 from backend.app.config import project_root
 from backend.app.contracts import CatalogEntry
 from backend.app.demo import load_golden_generation_request
@@ -21,8 +25,13 @@ def _artifact_path(entry: CatalogEntry, kind: str) -> str:
 
 
 def main() -> None:
+    if "--real-image" in sys.argv:
+        config.settings.enable_real_image_generation = True
+
     entry = run_golden_demo()
     output_dir = project_root() / "assets/outputs" / entry.recipe_hash
+    trace = json.loads((output_dir / "pipeline_trace.json").read_text(encoding="utf-8"))
+    hero_generation = trace.get("hero_still_generation", {})
 
     print("LuxFlow AI golden demo complete")
     print(f"request_hash: {entry.recipe_hash}")
@@ -32,6 +41,11 @@ def main() -> None:
     print(f"thumbnail: {_artifact_path(entry, 'thumbnail')}")
     print(f"catalog_entry: {_artifact_path(entry, 'catalog_entry')}")
     print(f"pipeline_trace: {_artifact_path(entry, 'pipeline_trace')}")
+    print(f"real_image_generation_enabled: {hero_generation.get('real_generation_enabled')}")
+    print(f"used_real_generation: {hero_generation.get('used_real_generation')}")
+    print(f"model_id: {hero_generation.get('model_id')}")
+    print(f"device: {hero_generation.get('device')}")
+    print(f"fallback_used: {hero_generation.get('fallback_used')}")
 
 
 if __name__ == "__main__":

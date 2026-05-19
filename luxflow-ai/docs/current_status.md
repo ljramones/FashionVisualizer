@@ -14,11 +14,11 @@
 - thumbnail rendering
 - static artifact serving
 - golden recipe demo
+- optional Diffusers hero-still route
+- graceful placeholder fallback when generation is disabled or unavailable
 
 ## Not Yet Implemented
 
-- real image generation
-- Diffusers route
 - ComfyUI route
 - LTX route
 - real video export
@@ -26,4 +26,4 @@
 - product tracking/projection
 - hosted fallback
 
-The project currently demonstrates request-to-artifact workflow architecture without running ML models.
+The project currently demonstrates request-to-artifact workflow architecture. Real image generation is optional, disabled by default, and limited to the hero-still stage.

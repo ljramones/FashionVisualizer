@@ -5,11 +5,11 @@ RESULTS_PATH = ROOT / "docs/benchmark_results.md"
 
 ROWS = [
     (
-        "diffusers_reference_stub",
-        "Preview handbag hero stills and fast iteration",
-        "Simple local reference path",
-        "Not wired to real generation or product lock yet",
-        "Stub",
+        "diffusers_reference",
+        "Optional preview hero still generation",
+        "Readable local Python route with placeholder fallback",
+        "Requires optional dependencies and model access for real generation",
+        "Optional",
     ),
     (
         "comfyui_visual_stub",

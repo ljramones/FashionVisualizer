@@ -4,6 +4,7 @@
   "scripts": {
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "./.venv/bin/uvicorn backend.app.main:app --reload",
+    "build": "npm --prefix frontend run build",
     "test": "./.venv/bin/python -m pytest backend/tests",
     "lint": "./.venv/bin/ruff check backend scripts && npm --prefix frontend run lint"
   }

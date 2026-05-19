@@ -64,6 +64,20 @@ export default function PipelineTraceViewer({ entry }: PipelineTraceViewerProps)
             ))}
           </ol>
           <div className="preservation-box">
+            <strong>Hero still generation</strong>
+            <span>
+              enabled: {String(trace.hero_still_generation.real_generation_enabled)}
+            </span>
+            <span>used real generation: {String(trace.hero_still_generation.used_real_generation)}</span>
+            <span>model: {trace.hero_still_generation.model_id}</span>
+            <span>device: {trace.hero_still_generation.device}</span>
+            <span>fallback used: {String(trace.hero_still_generation.fallback_used)}</span>
+            <small>{trace.hero_still_generation.notes.join(" ")}</small>
+            {trace.hero_still_generation.error ? (
+              <small>{trace.hero_still_generation.error}</small>
+            ) : null}
+          </div>
+          <div className="preservation-box">
             <strong>Product preservation</strong>
             <span>
               freeze core pixels: {String(trace.product_preservation.freeze_core_pixels)}

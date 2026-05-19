@@ -5,10 +5,10 @@ LuxFlow AI is local-first. The backend reads local metadata, compiles local reci
 Modes:
 
 - `cached`: read curated catalog metadata and avoid generation.
-- `preview`: future fast local route, currently mapped to a Diffusers reference stub.
+- `preview`: Diffusers reference route with optional real hero-still generation and placeholder fallback.
 - `quality`: future higher-control route, currently mapped to a ComfyUI visual stub.
 
-Apple Silicon, MPS, ComfyUI, and LTX are future execution routes. They are not installed, started, or invoked in this repository pass.
+Apple Silicon/MPS can be used by optional PyTorch installs when available. ComfyUI and LTX are future execution routes. They are not installed, started, or invoked in this repository pass.
 
 Current local artifact flow:
 
@@ -41,6 +41,15 @@ Run the golden demo:
 ```bash
 python scripts/run_golden_demo.py
 ```
+
+Optional real hero-still generation:
+
+```bash
+pip install -e ".[dev,generation]"
+LUXFLOW_ENABLE_REAL_IMAGE_GENERATION=true python scripts/run_golden_demo.py
+```
+
+The first real run may download model weights and may require accepting model access terms. The generated hero still does not attempt to generate the exact handbag; product fidelity remains handled by the product-lock/composite stage.
 
 Run frontend:
 

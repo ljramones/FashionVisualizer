@@ -13,11 +13,14 @@ def choose_route(recipe: SceneRecipe) -> PipelineRoute:
 
     if recipe.product.category == ProductCategory.handbag and recipe.mode == GenerationMode.preview:
         return PipelineRoute(
-            name="handbag_diffusers_reference_stub",
-            engine="diffusers_reference_stub",
+            name="handbag_diffusers_reference",
+            engine="diffusers_reference",
             mode=recipe.mode,
             available=False,
-            reason="Preview route reserved for a future lightweight Diffusers reference path.",
+            reason=(
+                "Preview route can use optional Diffusers hero still generation, "
+                "with placeholder fallback."
+            ),
         )
 
     if recipe.product.category == ProductCategory.handbag and recipe.mode == GenerationMode.quality:

@@ -14,7 +14,7 @@ def build_catalog() -> dict:
                 "model": "Adult Female Editorial Profile 01",
                 "location": "Hotel Lobby",
                 "action": "Walking With Bag",
-                "route": "handbag_diffusers_reference_stub",
+                "route": "handbag_diffusers_reference",
                 "video_path": "assets/outputs/placeholder_black_bag_hotel.mp4",
                 "eval_notes": [
                     "Prompt adherence pending real generation.",
@@ -40,7 +40,7 @@ def build_catalog() -> dict:
                 "model": "Adult Male Editorial Profile 01",
                 "location": "Hotel Lobby",
                 "action": "Walking With Bag",
-                "route": "handbag_diffusers_reference_stub",
+                "route": "handbag_diffusers_reference",
                 "video_path": "assets/outputs/placeholder_tan_tote_hotel.mp4",
                 "eval_notes": [
                     "Placeholder catalog entry.",

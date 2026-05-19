@@ -77,6 +77,16 @@ export interface PipelineTrace {
     destructive_diffusion_allowed: boolean;
     notes: string[];
   };
+  hero_still_generation: {
+    backend_requested: string;
+    real_generation_enabled: boolean;
+    used_real_generation: boolean;
+    model_id: string;
+    device: string;
+    fallback_used: boolean;
+    notes: string[];
+    error?: string | null;
+  };
   next_real_stage: string;
 }
 

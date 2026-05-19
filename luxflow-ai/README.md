@@ -13,7 +13,7 @@ Actual model execution is intentionally deferred to later implementation passes.
 - ✅ placeholder artifact pipeline
 - ✅ product-lock placeholder
 - ✅ frontend workflow preview
-- ⏳ real hero-still generation
+- ✅ optional Diffusers hero-still route with placeholder fallback
 - ⏳ real LTX video route
 - ⏳ ComfyUI visual route
 
@@ -153,6 +153,40 @@ curl -X POST http://127.0.0.1:8000/demo/run-golden
 
 The demo creates deterministic local artifacts under `assets/outputs/{request_hash}/` and serves them through `/static/assets/outputs/{request_hash}/...`. It does not run ML or generate a real video.
 
+## Optional Real Hero-Still Generation
+
+Default install keeps heavy ML dependencies out:
+
+```bash
+pip install -e ".[dev]"
+```
+
+Optional generation install:
+
+```bash
+pip install -e ".[dev,generation]"
+```
+
+Run the placeholder golden demo:
+
+```bash
+make demo
+```
+
+Attempt one real Diffusers hero still:
+
+```bash
+LUXFLOW_ENABLE_REAL_IMAGE_GENERATION=true python scripts/run_golden_demo.py
+```
+
+or:
+
+```bash
+python scripts/run_golden_demo.py --real-image
+```
+
+The first real run may download model weights and may require accepting model access terms. Local performance depends on hardware. The generated hero still should create the adult model, scene, and action context; it should not attempt to generate the exact handbag. Handbag fidelity remains handled by the product-lock/composite stage.
+
 ## Example Scene Recipe
 
 ```json
@@ -177,7 +211,7 @@ Demo model identities should be synthetic, licensed, or anonymous. The MVP must 
 
 ## Current Limitations
 
-Generation is still non-ML. `/generate` creates deterministic local placeholder artifacts under `assets/outputs/{request_hash}/`, including hero still, product-locked composite, thumbnail, catalog entry metadata, and pipeline trace. Videos remain explicit placeholder JSON files, benchmarking is planned-route comparison only, and product lock validation returns explanatory notes rather than image analysis.
+Generation is optional and disabled by default. `/generate` creates deterministic local artifacts under `assets/outputs/{request_hash}/`, including hero still, product-locked composite, thumbnail, catalog entry metadata, and pipeline trace. When real image generation is unavailable or disabled, the hero still falls back to a Pillow placeholder. Videos remain explicit placeholder JSON files, benchmarking is planned-route comparison only, and product lock validation returns explanatory notes rather than image analysis.
 
 ## Future Work
 

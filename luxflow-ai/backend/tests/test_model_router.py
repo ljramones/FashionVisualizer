@@ -24,7 +24,7 @@ def test_router_chooses_cached_route() -> None:
 
 def test_router_chooses_preview_route() -> None:
     route = choose_route(_recipe_for_mode("preview"))
-    assert route.name == "handbag_diffusers_reference_stub"
+    assert route.name == "handbag_diffusers_reference"
 
 
 def test_router_chooses_quality_route() -> None:

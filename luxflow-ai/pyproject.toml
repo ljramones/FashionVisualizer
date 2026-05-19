@@ -23,7 +23,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-generation = ["diffusers", "transformers", "accelerate"]
+generation = ["torch", "diffusers", "transformers", "accelerate", "safetensors"]
 video = ["moviepy"]
 dev = ["pytest", "pytest-asyncio", "ruff", "mypy"]
 
