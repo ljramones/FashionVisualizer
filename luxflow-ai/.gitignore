@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+npm-debug.log*
+dist/
+
+# Build artifacts
+build/
+*.egg-info/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Generated ML and media outputs
+assets/outputs/*
+!assets/outputs/.gitkeep
+!assets/outputs/
+data/
+datasets/
+models/
+!assets/models/
+!assets/models/**
+checkpoints/
+runs/
+artifacts/
+mlruns/
+wandb/
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.pkl
+*.joblib
+*.mp4
+*.mov
+
+# Local files
+*.log
+.DS_Store
+.idea/
+.vscode/

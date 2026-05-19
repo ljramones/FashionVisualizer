@@ -28,9 +28,13 @@ dist/
 data/
 datasets/
 models/
+!luxflow-ai/assets/models/
+!luxflow-ai/assets/models/**
 checkpoints/
 runs/
 outputs/
+!luxflow-ai/assets/outputs/
+!luxflow-ai/assets/outputs/.gitkeep
 artifacts/
 mlruns/
 wandb/

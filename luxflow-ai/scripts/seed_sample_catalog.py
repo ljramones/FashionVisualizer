@@ -1,0 +1,74 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+CATALOG_PATH = ROOT / "assets/catalog/sample_catalog.json"
+
+
+def build_catalog() -> dict:
+    return {
+        "entries": [
+            {
+                "id": "sample_black_hotel_walk",
+                "product_name": "Black Structured Bag",
+                "model": "Adult Female Editorial Profile 01",
+                "location": "Hotel Lobby",
+                "action": "Walking With Bag",
+                "route": "handbag_diffusers_reference_stub",
+                "video_path": "assets/outputs/placeholder_black_bag_hotel.mp4",
+                "eval_notes": [
+                    "Prompt adherence pending real generation.",
+                    "Product preservation pending source similarity check.",
+                ],
+            },
+            {
+                "id": "sample_black_gallery_turn",
+                "product_name": "Black Structured Bag",
+                "model": "Adult Male Editorial Profile 01",
+                "location": "Modern Gallery",
+                "action": "Standing Turn With Bag",
+                "route": "handbag_comfyui_visual_stub",
+                "video_path": "assets/outputs/placeholder_black_bag_gallery.mp4",
+                "eval_notes": [
+                    "Route represents future visual workflow.",
+                    "No generated media is included.",
+                ],
+            },
+            {
+                "id": "sample_tan_hotel_walk",
+                "product_name": "Tan Travel Tote",
+                "model": "Adult Male Editorial Profile 01",
+                "location": "Hotel Lobby",
+                "action": "Walking With Bag",
+                "route": "handbag_diffusers_reference_stub",
+                "video_path": "assets/outputs/placeholder_tan_tote_hotel.mp4",
+                "eval_notes": [
+                    "Placeholder catalog entry.",
+                    "Product lock mask expected in future pass.",
+                ],
+            },
+            {
+                "id": "sample_clutch_gallery_turn",
+                "product_name": "Evening Clutch",
+                "model": "Adult Female Editorial Profile 01",
+                "location": "Modern Gallery",
+                "action": "Standing Turn With Bag",
+                "route": "handbag_comfyui_visual_stub",
+                "video_path": "assets/outputs/placeholder_clutch_gallery.mp4",
+                "eval_notes": ["Placeholder loop target.", "Preserve clasp and compact profile."],
+            },
+        ]
+    }
+
+
+def main() -> None:
+    CATALOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    CATALOG_PATH.write_text(json.dumps(build_catalog(), indent=2) + "\n", encoding="utf-8")
+    print(f"Seeded {CATALOG_PATH}")
+
+
+if __name__ == "__main__":
+    main()

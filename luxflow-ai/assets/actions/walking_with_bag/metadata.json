@@ -1,0 +1,8 @@
+{
+  "id": "walking_with_bag",
+  "name": "Walking With Bag",
+  "prompt_fragment": "The model walks slowly while carrying the handbag naturally at the side.",
+  "camera_motion": "slow forward dolly with subtle handheld steadiness",
+  "product_interaction": "bag remains visible, stable, and close to the model hand",
+  "loop_policy": "ping_pong"
+}

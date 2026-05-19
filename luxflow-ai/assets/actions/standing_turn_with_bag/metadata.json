@@ -1,0 +1,8 @@
+{
+  "id": "standing_turn_with_bag",
+  "name": "Standing Turn With Bag",
+  "prompt_fragment": "The model performs a small standing turn to present the handbag silhouette.",
+  "camera_motion": "locked camera with gentle push-in",
+  "product_interaction": "bag faces camera during the turn and remains unobstructed",
+  "loop_policy": "ping_pong"
+}

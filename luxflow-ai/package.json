@@ -1,0 +1,10 @@
+{
+  "name": "luxflow-ai-workspace",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "uvicorn backend.app.main:app --reload",
+    "test": "python -m pytest backend/tests",
+    "lint": "ruff check backend scripts && npm --prefix frontend run lint"
+  }
+}
