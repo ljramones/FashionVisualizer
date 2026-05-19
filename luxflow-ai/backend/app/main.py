@@ -1,9 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
+from backend.app.config import resolve_project_path, settings
 from backend.app.contracts import (
     ActionRef,
     CatalogEntry,
+    EvalResult,
     GenerationRequest,
     LocationRef,
     ModelProfile,
@@ -35,6 +38,12 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+app.mount(
+    "/static/assets",
+    StaticFiles(directory=resolve_project_path(settings.assets_dir)),
+    name="static-assets",
 )
 
 
@@ -90,5 +99,18 @@ def generate(request: GenerationRequest) -> CatalogEntry:
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
-    choose_route(recipe)
+    route = choose_route(recipe)
+    if route.name == "unsupported_stub":
+        return CatalogEntry(
+            id=f"unsupported_{recipe.request_hash}",
+            product=recipe.product,
+            model=recipe.model,
+            location=recipe.location,
+            action=recipe.action,
+            recipe_hash=recipe.request_hash,
+            route=route,
+            artifacts=[],
+            eval=EvalResult(notes=["Unsupported route; no placeholder artifacts were generated."]),
+            status="stub",
+        )
     return run_handbag_pipeline(recipe)

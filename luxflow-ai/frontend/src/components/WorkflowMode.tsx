@@ -12,6 +12,7 @@ import type {
   SceneRecipe
 } from "../types/catalog";
 import EvalPanel from "./EvalPanel";
+import ArtifactPreview from "./ArtifactPreview";
 import RecipeViewer from "./RecipeViewer";
 import WorkflowInspector from "./WorkflowInspector";
 
@@ -100,6 +101,7 @@ export default function WorkflowMode() {
         {error ? <p className="error">{error}</p> : null}
       </form>
       <div className="workflow-results">
+        <ArtifactPreview entry={entry} />
         <WorkflowInspector recipe={recipe} entry={entry} />
         <RecipeViewer title="SceneRecipe JSON" data={recipe} />
         <RecipeViewer title="CatalogEntry JSON" data={entry} />

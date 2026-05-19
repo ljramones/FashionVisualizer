@@ -12,4 +12,11 @@ Future implementation should:
 - Compare generated output against the source image for similarity.
 - Project or track the locked product region through video frames.
 
-The current code documents this policy but does not perform image analysis.
+The current implementation writes a product-locked composite placeholder with a marked handbag layer and a freeze policy:
+
+- `freeze_core_pixels: true`
+- `allow_edge_feathering: true`
+- `allow_contact_shadow: true`
+- `destructive_diffusion_allowed: false`
+
+This is not image analysis and does not prove product similarity. It establishes the metadata and artifact lifecycle needed before destructive generation stages are introduced.

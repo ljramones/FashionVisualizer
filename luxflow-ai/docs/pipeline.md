@@ -1,6 +1,6 @@
 # Pipeline
 
-The current handbag pipeline is a stub that returns a mock `CatalogEntry`. It exists to lock down interfaces before model execution is introduced.
+The current handbag pipeline is a deterministic placeholder artifact pipeline. It creates real local files for a compiled recipe while still avoiding model execution.
 
 Planned stages:
 
@@ -15,7 +15,11 @@ Current status:
 
 - Recipe compilation is implemented.
 - Route selection is implemented as a deterministic stub.
-- Artifact paths are placeholders.
+- `POST /generate` writes artifacts under `assets/outputs/{request_hash}/`.
+- `hero_still.png`, `product_locked_composite.png`, and `thumbnail.png` are generated with Pillow.
+- `final_video_placeholder.json` is written instead of a real video.
+- `catalog_entry.json` and `pipeline_trace.json` record the artifact lifecycle.
 - Product lock functions return policy metadata only.
-- Video export returns the planned output path and does not call ffmpeg.
-- Evaluation scores are `None` until real media exists.
+- Evaluation uses honest placeholder scores; prompt adherence is not measured.
+
+No ML model, ComfyUI workflow, or video route is executed.

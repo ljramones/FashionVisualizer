@@ -97,7 +97,13 @@ export interface CatalogEntry {
   action: ActionRef;
   recipe_hash: string;
   route: PipelineRoute;
-  artifacts: { kind: string; path: string; mime_type?: string | null; exists: boolean }[];
+  artifacts: {
+    kind: string;
+    path: string;
+    static_url?: string | null;
+    mime_type?: string | null;
+    exists: boolean;
+  }[];
   eval: EvalResult;
   status: "cached" | "stub" | "complete";
 }

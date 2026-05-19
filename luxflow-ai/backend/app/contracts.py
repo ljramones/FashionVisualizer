@@ -90,6 +90,7 @@ class PipelineRoute(BaseModel):
 class ArtifactRef(BaseModel):
     kind: str
     path: str
+    static_url: str | None = None
     mime_type: str | None = None
     exists: bool = False
 

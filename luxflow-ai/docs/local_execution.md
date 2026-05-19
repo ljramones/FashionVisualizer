@@ -10,6 +10,13 @@ Modes:
 
 Apple Silicon, MPS, ComfyUI, and LTX are future execution routes. They are not installed, started, or invoked in this repository pass.
 
+Current local artifact flow:
+
+- `POST /generate` writes to `assets/outputs/{request_hash}/` by default.
+- Set `LUXFLOW_OUTPUT_ROOT` to redirect outputs for tests or experiments.
+- Generated PNGs are served from `/static/assets/outputs/...` in local development.
+- Video output is represented by `final_video_placeholder.json`, not a playable video.
+
 Run backend:
 
 ```bash

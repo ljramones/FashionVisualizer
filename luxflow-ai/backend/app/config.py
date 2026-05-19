@@ -8,6 +8,7 @@ class Settings(BaseSettings):
 
     env: str = "development"
     assets_dir: Path = Path("assets")
+    output_root: Path = Path("assets/outputs")
     catalog_path: Path = Path("assets/catalog/sample_catalog.json")
     database_url: str = "sqlite:///./luxflow.db"
     enable_hosted_fallback: bool = False

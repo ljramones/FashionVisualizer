@@ -1,14 +1,22 @@
 from backend.app.contracts import EvalResult, ProductRef
 
 
-def build_product_freeze_policy(product: ProductRef) -> dict[str, str | bool | None]:
+def build_product_freeze_policy(
+    product: ProductRef,
+) -> dict[str, str | bool | list[str] | None]:
     """Describe how product pixels should be protected in future generation stages."""
 
     return {
         "product_id": product.id,
-        "requires_mask": True,
         "mask_path": product.mask_path,
-        "policy": "protect source product silhouette, logo area, structure, straps, and hardware",
+        "freeze_core_pixels": True,
+        "allow_edge_feathering": True,
+        "allow_contact_shadow": True,
+        "destructive_diffusion_allowed": False,
+        "notes": [
+            "Protect source product silhouette, logo area, structure, straps, and hardware.",
+            "Placeholder composite does not run diffusion over product pixels.",
+        ],
     }
 
 

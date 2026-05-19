@@ -4,6 +4,19 @@ LuxFlow AI is a local-first workflow studio for product-preserving generative ca
 
 Actual model execution is intentionally deferred to later implementation passes. This repository foundation documents the architecture, contracts, UI, and stub pipeline paths without downloading weights, installing ComfyUI, or calling paid APIs.
 
+## Current Implementation Status
+
+- ✅ contracts
+- ✅ registry
+- ✅ recipe compiler
+- ✅ router
+- ✅ placeholder artifact pipeline
+- ✅ product-lock placeholder
+- ✅ frontend workflow preview
+- ⏳ real hero-still generation
+- ⏳ real LTX video route
+- ⏳ ComfyUI visual route
+
 ## What This Project Is
 
 LuxFlow AI is a portfolio-grade AI architecture repo for handbag catalog workflows. It shows how product metadata, model profiles, locations, and actions can compile into deterministic scene recipes and route through multiple future generation engines.
@@ -121,7 +134,7 @@ Demo model identities should be synthetic, licensed, or anonymous. The MVP must 
 
 ## Current Limitations
 
-Generation is stubbed, videos are placeholders, benchmarking is planned-route comparison only, and product lock validation returns explanatory notes rather than image analysis.
+Generation is still non-ML. `/generate` creates deterministic local placeholder artifacts under `assets/outputs/{request_hash}/`, including hero still, product-locked composite, thumbnail, catalog entry metadata, and pipeline trace. Videos remain explicit placeholder JSON files, benchmarking is planned-route comparison only, and product lock validation returns explanatory notes rather than image analysis.
 
 ## Future Work
 
