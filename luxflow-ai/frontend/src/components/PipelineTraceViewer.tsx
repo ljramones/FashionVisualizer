@@ -68,10 +68,20 @@ export default function PipelineTraceViewer({ entry }: PipelineTraceViewerProps)
             <span>
               enabled: {String(trace.hero_still_generation.real_generation_enabled)}
             </span>
+            <span>attempted: {String(trace.hero_still_generation.generation_attempted)}</span>
             <span>used real generation: {String(trace.hero_still_generation.used_real_generation)}</span>
             <span>model: {trace.hero_still_generation.model_id}</span>
             <span>device: {trace.hero_still_generation.device}</span>
             <span>fallback used: {String(trace.hero_still_generation.fallback_used)}</span>
+            <span>duration: {trace.hero_still_generation.duration_seconds ?? "n/a"}s</span>
+            <span>
+              deps: torch {String(trace.hero_still_generation.dependency_status.torch_available)}
+              , diffusers{" "}
+              {String(trace.hero_still_generation.dependency_status.diffusers_available)}
+            </span>
+            {trace.hero_still_generation.error_summary ? (
+              <small>{trace.hero_still_generation.error_summary}</small>
+            ) : null}
             <small>{trace.hero_still_generation.notes.join(" ")}</small>
             {trace.hero_still_generation.error ? (
               <small>{trace.hero_still_generation.error}</small>

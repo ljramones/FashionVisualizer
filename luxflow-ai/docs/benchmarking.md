@@ -9,3 +9,7 @@ Benchmarking currently compares planned routes, not real model performance. This
 | ltx_video_stub | Future local image-to-video route | Motion generation from product-locked stills | No video model installed | Placeholder |
 
 Future benchmarks should record runtime, VRAM/RAM use, output dimensions, prompt adherence, product preservation, and failure modes.
+
+## Real Hero-Still Validation
+
+The optional Diffusers route was attempted with `black-forest-labs/FLUX.1-schnell`. Optional dependencies installed, but Hugging Face returned gated model access (`401`), so the route fell back to the placeholder renderer. See `docs/benchmark_results.md` for the recorded validation row.

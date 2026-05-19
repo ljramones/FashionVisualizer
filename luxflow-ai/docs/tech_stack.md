@@ -10,3 +10,13 @@
 - MoviePy or ffmpeg are deferred for future ping-pong video export.
 
 Heavy ML dependencies are optional. `torch`, `diffusers`, `transformers`, and `accelerate` live behind the `generation` extra and are not required for normal install, tests, or placeholder demos. OpenCV and MoviePy are still deferred.
+
+## Real Hero-Still Validation
+
+`pip install -e ".[dev,generation]"` installed the optional generation stack in this pass:
+
+- `torch 2.12.0`
+- `diffusers 0.38.0`
+- `transformers 5.8.1`
+
+The default model remains configurable through `LUXFLOW_IMAGE_MODEL_ID`. The attempted default, `black-forest-labs/FLUX.1-schnell`, returned gated model access (`401`) during validation, so the route fell back to the Pillow placeholder. Users may retry after accepting model access/authenticating with Hugging Face or set a smaller smoke-test model ID without changing the artifact lifecycle.

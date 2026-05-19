@@ -80,11 +80,24 @@ export interface PipelineTrace {
   hero_still_generation: {
     backend_requested: string;
     real_generation_enabled: boolean;
+    generation_attempted: boolean;
     used_real_generation: boolean;
     model_id: string;
     device: string;
+    dependency_status: {
+      torch_available: boolean;
+      diffusers_available: boolean;
+      torch_version: string | null;
+      diffusers_version: string | null;
+      mps_available: boolean;
+      cuda_available: boolean;
+    };
     fallback_used: boolean;
     notes: string[];
+    started_at?: string | null;
+    completed_at?: string | null;
+    duration_seconds?: number | null;
+    error_summary?: string | null;
     error?: string | null;
   };
   next_real_stage: string;

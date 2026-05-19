@@ -51,6 +51,14 @@ LUXFLOW_ENABLE_REAL_IMAGE_GENERATION=true python scripts/run_golden_demo.py
 
 The first real run may download model weights and may require accepting model access terms. The generated hero still does not attempt to generate the exact handbag; product fidelity remains handled by the product-lock/composite stage.
 
+Real hero-still validation command:
+
+```bash
+LUXFLOW_ENABLE_REAL_IMAGE_GENERATION=true python scripts/smoke_real_hero_still.py
+```
+
+Observed result for the default model in this pass: dependencies installed, Apple `mps` was selected in an unrestricted run, and `black-forest-labs/FLUX.1-schnell` fell back because Hugging Face returned gated model access (`401`). The fallback still produced local artifacts and wrote timing, device, dependency status, and the error summary to `pipeline_trace.json`.
+
 Run frontend:
 
 ```bash

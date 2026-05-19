@@ -42,6 +42,21 @@ def render_table() -> str:
         f"| {route} | {purpose} | {strength} | {limitation} | {status} |"
         for route, purpose, strength, limitation, status in ROWS
     )
+    lines.extend(
+        [
+            "",
+            "## Real Hero-Still Validation",
+            "",
+            "This manual validation row records the first optional Diffusers route attempt. "
+            "The route fell back cleanly; no generated media is committed.",
+            "",
+            "| route | model | device | status | duration | output type | notes |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
+            "| handbag_diffusers_reference | black-forest-labs/FLUX.1-schnell | mps | "
+            "fallback_model_access_required | 0.858s | placeholder PNG | Hugging Face "
+            "returned gated model access (401); pipeline trace captured the fallback. |",
+        ]
+    )
     return "\n".join(lines) + "\n"
 
 

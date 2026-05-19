@@ -187,6 +187,22 @@ python scripts/run_golden_demo.py --real-image
 
 The first real run may download model weights and may require accepting model access terms. Local performance depends on hardware. The generated hero still should create the adult model, scene, and action context; it should not attempt to generate the exact handbag. Handbag fidelity remains handled by the product-lock/composite stage.
 
+## Real Hero-Still Validation
+
+Observed on this repository pass:
+
+- Optional dependencies installed: `torch 2.12.0`, `diffusers 0.38.0`, `transformers 5.8.1`.
+- `/system/capabilities` reports generation dependencies when installed and keeps real generation disabled by default.
+- An unrestricted smoke run selected Apple `mps`, attempted `black-forest-labs/FLUX.1-schnell`, and fell back to the placeholder because Hugging Face returned gated model access (`401`).
+- The fallback still produced `hero_still.png`, `product_locked_composite.png`, `thumbnail.png`, `catalog_entry.json`, and `pipeline_trace.json`.
+- `pipeline_trace.json` records dependency status, device, start/end timestamps, duration, fallback status, and the error summary.
+
+To retry after accepting model access and authenticating with Hugging Face:
+
+```bash
+LUXFLOW_ENABLE_REAL_IMAGE_GENERATION=true python scripts/smoke_real_hero_still.py
+```
+
 ## Example Scene Recipe
 
 ```json

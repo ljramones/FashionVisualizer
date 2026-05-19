@@ -45,7 +45,11 @@ def main() -> None:
     print(f"used_real_generation: {hero_generation.get('used_real_generation')}")
     print(f"model_id: {hero_generation.get('model_id')}")
     print(f"device: {hero_generation.get('device')}")
+    print(f"generation_attempted: {hero_generation.get('generation_attempted')}")
     print(f"fallback_used: {hero_generation.get('fallback_used')}")
+    print(f"duration_seconds: {hero_generation.get('duration_seconds')}")
+    if hero_generation.get("error_summary"):
+        print(f"error_summary: {hero_generation.get('error_summary')}")
 
 
 if __name__ == "__main__":

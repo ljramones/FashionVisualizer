@@ -21,7 +21,12 @@ Current status:
 - `product_locked_composite.png` and `thumbnail.png` are generated with Pillow.
 - `final_video_placeholder.json` is written instead of a real video.
 - `catalog_entry.json` and `pipeline_trace.json` record the artifact lifecycle.
+- `pipeline_trace.json` records hero-still generation timing, dependency status, selected device, fallback status, and error summary.
 - Product lock functions return policy metadata only.
 - Evaluation uses honest placeholder scores; prompt adherence is not measured.
 
 No ComfyUI workflow or video route is executed. Optional Diffusers hero-still execution is disabled by default and falls back cleanly to the placeholder renderer.
+
+## Real Hero-Still Validation
+
+The default Diffusers model is `black-forest-labs/FLUX.1-schnell`. In the current validation pass, optional dependencies installed and the route attempted a real hero still, but Hugging Face returned gated model access (`401`). The pipeline did not fail the request; it rendered the placeholder hero still, continued product-lock composite and thumbnail creation, and persisted the failure reason in the trace.

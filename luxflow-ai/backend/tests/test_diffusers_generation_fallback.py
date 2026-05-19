@@ -29,8 +29,11 @@ def test_generation_disabled_uses_placeholder(tmp_path, monkeypatch) -> None:
     trace = json.loads(trace_path.read_text(encoding="utf-8"))
 
     assert trace["hero_still_generation"]["real_generation_enabled"] is False
+    assert trace["hero_still_generation"]["generation_attempted"] is False
     assert trace["hero_still_generation"]["used_real_generation"] is False
     assert trace["hero_still_generation"]["fallback_used"] is True
+    assert trace["hero_still_generation"]["duration_seconds"] is not None
+    assert "dependency_status" in trace["hero_still_generation"]
     assert trace["stages"][1]["label"] == "Hero still placeholder rendered"
 
 
@@ -46,6 +49,14 @@ def test_missing_diffusers_falls_back_cleanly(tmp_path, monkeypatch) -> None:
                 "output_path": None,
                 "model_id": settings.image_model_id,
                 "device": "cpu",
+                "dependency_status": {
+                    "torch_available": False,
+                    "diffusers_available": False,
+                    "torch_version": None,
+                    "diffusers_version": None,
+                    "mps_available": False,
+                    "cuda_available": False,
+                },
                 "notes": ["diffusers missing in test"],
                 "error": "No module named diffusers",
             },
@@ -58,8 +69,10 @@ def test_missing_diffusers_falls_back_cleanly(tmp_path, monkeypatch) -> None:
 
     assert (tmp_path / entry.recipe_hash / "hero_still.png").exists()
     assert trace["hero_still_generation"]["real_generation_enabled"] is True
+    assert trace["hero_still_generation"]["generation_attempted"] is True
     assert trace["hero_still_generation"]["used_real_generation"] is False
     assert trace["hero_still_generation"]["fallback_used"] is True
+    assert trace["hero_still_generation"]["error_summary"] == "No module named diffusers"
     assert "diffusers missing in test" in trace["hero_still_generation"]["notes"]
 
 
