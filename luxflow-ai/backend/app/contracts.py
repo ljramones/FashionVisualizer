@@ -1,14 +1,14 @@
-from enum import Enum
+from enum import StrEnum
 from typing import Literal
 
 from pydantic import BaseModel, Field
 
 
-class ProductCategory(str, Enum):
+class ProductCategory(StrEnum):
     handbag = "handbag"
 
 
-class GenerationMode(str, Enum):
+class GenerationMode(StrEnum):
     cached = "cached"
     preview = "preview"
     quality = "quality"

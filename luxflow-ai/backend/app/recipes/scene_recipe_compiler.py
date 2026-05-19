@@ -9,6 +9,7 @@ from backend.app.registry.asset_registry import get_action, get_location, get_mo
 def request_hash(request: GenerationRequest) -> str:
     """Hash normalized public request fields for deterministic cache keys."""
 
+    mode = request.mode.value if hasattr(request.mode, "value") else str(request.mode)
     normalized = {
         "product_id": request.product_id,
         "model_id": request.model_id,
@@ -16,7 +17,7 @@ def request_hash(request: GenerationRequest) -> str:
         "action_id": request.action_id,
         "seed": request.seed,
         "aspect_ratio": request.aspect_ratio,
-        "mode": request.mode.value,
+        "mode": mode,
     }
     payload = json.dumps(normalized, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]

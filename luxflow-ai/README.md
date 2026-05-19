@@ -69,13 +69,23 @@ The MVP includes handbag metadata, synthetic or licensed model profiles, declara
 
 ```bash
 cd luxflow-ai
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 make backend
 ```
 
 Backend runs at `http://127.0.0.1:8000`.
+
+## Run Tests and Lint
+
+```bash
+cd luxflow-ai
+make test
+make lint
+```
+
+`make test` runs the backend pytest suite. `make lint` runs Ruff for backend/scripts and TypeScript checks for the frontend.
 
 ## Run Frontend
 
@@ -85,7 +95,7 @@ npm install
 npm run dev
 ```
 
-Set `VITE_API_BASE_URL=http://127.0.0.1:8000` if needed.
+Set `VITE_API_BASE_URL=http://localhost:8000` in `frontend/.env` if needed.
 
 ## Example Scene Recipe
 

@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "dev:frontend": "npm --prefix frontend run dev",
-    "dev:backend": "uvicorn backend.app.main:app --reload",
-    "test": "python -m pytest backend/tests",
-    "lint": "ruff check backend scripts && npm --prefix frontend run lint"
+    "dev:backend": "./.venv/bin/uvicorn backend.app.main:app --reload",
+    "test": "./.venv/bin/python -m pytest backend/tests",
+    "lint": "./.venv/bin/ruff check backend scripts && npm --prefix frontend run lint"
   }
 }

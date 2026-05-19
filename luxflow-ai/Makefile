@@ -1,20 +1,25 @@
 .PHONY: backend frontend test lint seed tree
 
+PYTHON ?= .venv/bin/python
+UVICORN ?= .venv/bin/uvicorn
+RUFF ?= .venv/bin/ruff
+NPM ?= npm
+
 backend:
-	uvicorn backend.app.main:app --reload
+	$(UVICORN) backend.app.main:app --reload
 
 frontend:
-	npm --prefix frontend run dev
+	$(NPM) --prefix frontend run dev
 
 test:
-	python -m pytest backend/tests
+	$(PYTHON) -m pytest backend/tests
 
 lint:
-	ruff check backend scripts
-	npm --prefix frontend run lint
+	$(RUFF) check backend scripts
+	$(NPM) --prefix frontend run lint
 
 seed:
-	python scripts/seed_sample_catalog.py
+	$(PYTHON) scripts/seed_sample_catalog.py
 
 tree:
 	find . -maxdepth 4 -type f | sort

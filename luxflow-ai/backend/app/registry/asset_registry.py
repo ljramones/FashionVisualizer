@@ -1,26 +1,43 @@
 import json
 from pathlib import Path
-from typing import cast
-from typing import TypeVar
+from typing import Protocol, TypeVar, cast
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from backend.app.config import resolve_project_path, settings
 from backend.app.contracts import ActionRef, LocationRef, ModelProfile, ProductRef
 
-T = TypeVar("T", bound=BaseModel)
+
+class MetadataLoadError(RuntimeError):
+    """Raised when local metadata cannot be parsed into a public contract."""
 
 
-def _load_metadata_file(path: Path, model: type[T]) -> T:
-    with path.open("r", encoding="utf-8") as handle:
-        return model.model_validate(json.load(handle))
+class HasId(Protocol):
+    id: str
 
 
-def _load_metadata_dir(relative_path: str, model: type[T]) -> list[T]:
+TModel = TypeVar("TModel", bound=BaseModel)
+TId = TypeVar("TId", bound=HasId)
+
+
+def _load_metadata_file(path: Path, model: type[TModel]) -> TModel:
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except json.JSONDecodeError as exc:
+        raise MetadataLoadError(f"Invalid JSON in metadata file {path}: {exc.msg}") from exc
+
+    try:
+        return model.model_validate(payload)
+    except ValidationError as exc:
+        raise MetadataLoadError(f"Invalid {model.__name__} metadata in {path}: {exc}") from exc
+
+
+def _load_metadata_dir(relative_path: str, model: type[TModel]) -> list[TModel]:
     base = resolve_project_path(settings.assets_dir) / relative_path
     if not base.exists():
         return []
-    items: list[T] = []
+    items: list[TModel] = []
     for metadata_path in sorted(base.glob("*/metadata.json")):
         items.append(_load_metadata_file(metadata_path, model))
     return items
@@ -42,9 +59,9 @@ def load_actions() -> list[ActionRef]:
     return _load_metadata_dir("actions", ActionRef)
 
 
-def _find_by_id(items: list[T], item_id: str, label: str) -> T:
+def _find_by_id(items: list[TId], item_id: str, label: str) -> TId:
     for item in items:
-        if getattr(item, "id") == item_id:
+        if item.id == item_id:
             return item
     raise KeyError(f"Unknown {label}: {item_id}")
 

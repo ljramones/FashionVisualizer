@@ -13,11 +13,28 @@ Apple Silicon, MPS, ComfyUI, and LTX are future execution routes. They are not i
 Run backend:
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
 make backend
+```
+
+Run checks:
+
+```bash
+make test
+make lint
+python scripts/seed_sample_catalog.py
+python scripts/benchmark_models.py
+python scripts/generate_placeholder_assets.py
 ```
 
 Run frontend:
 
 ```bash
-make frontend
+cd frontend
+npm install
+npm run dev
 ```
+
+The frontend reads `VITE_API_BASE_URL`; see `frontend/.env.example`.

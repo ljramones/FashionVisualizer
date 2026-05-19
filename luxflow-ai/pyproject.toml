@@ -28,7 +28,7 @@ video = ["moviepy"]
 dev = ["pytest", "pytest-asyncio", "ruff", "mypy"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["backend/app"]
+packages = ["backend"]
 
 [tool.ruff]
 target-version = "py311"
