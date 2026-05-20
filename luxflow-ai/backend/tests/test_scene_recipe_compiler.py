@@ -1,3 +1,4 @@
+from backend.app.config import project_root
 from backend.app.contracts import GenerationRequest
 from backend.app.recipes.scene_recipe_compiler import compile_scene_recipe, request_hash
 
@@ -67,3 +68,15 @@ def test_negative_prompt_contains_product_preservation_terms() -> None:
         "flicker",
     ]:
         assert term in recipe.negative_prompt
+
+
+def test_golden_empty_hand_recipe_compiles() -> None:
+    payload = (
+        project_root() / "assets/demo/golden_empty_hand_recipe.json"
+    ).read_text(encoding="utf-8")
+    request = GenerationRequest.model_validate_json(payload)
+    recipe = compile_scene_recipe(request)
+
+    assert recipe.action.id == "standing_right_hand_visible"
+    assert recipe.action.hero_action_prompt_fragment is not None
+    assert recipe.action.final_catalog_action_label == "standing with handbag"

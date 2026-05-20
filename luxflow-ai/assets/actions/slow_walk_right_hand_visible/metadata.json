@@ -1,0 +1,25 @@
+{
+  "id": "slow_walk_right_hand_visible",
+  "name": "Slow Walk Right Hand Visible",
+  "prompt_fragment": "The final catalog scene presents the model walking with the handbag placed near the right hand.",
+  "camera_motion": "slow forward dolly with restrained editorial motion",
+  "product_interaction": "product is intended to align near the relaxed right hand after compositing",
+  "loop_policy": "ping_pong",
+  "product_anchor_target": "right_hand",
+  "composition_space_hint": "clean negative space near the right hip and right hand",
+  "occlusion_hint": "right hand visible and relaxed near the side, no object currently held",
+  "final_catalog_action_label": "walking with handbag",
+  "hero_action_prompt_fragment": "adult editorial model walking slowly with right hand visible and relaxed near the side, empty hands, clean negative space near the right hip for later product placement",
+  "hero_pose_intent": "slow walking pose with visible relaxed right hand and clear side placement zone",
+  "forbidden_generated_objects": [
+    "handbag",
+    "bag",
+    "purse",
+    "tote",
+    "clutch",
+    "luggage",
+    "backpack",
+    "strap",
+    "branded accessory"
+  ]
+}

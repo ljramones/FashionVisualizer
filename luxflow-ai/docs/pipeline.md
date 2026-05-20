@@ -39,13 +39,28 @@ The current probe produced real hero stills with SDXL Turbo and SDXL base. The n
 
 ## Hero-Still Prompt Strategy
 
-The hero-still route now builds a product-empty scene prompt. It asks for the adult editorial model, selected location, selected action, lighting, mood, natural hands, and luxury catalog framing. It explicitly avoids prominent bags, branded accessories, and visible logos because the handbag is intended to be composited later through the product-lock layer.
+The hero-still route now builds a product-empty scene prompt. It asks for the adult editorial model, selected location, hero-stage action, lighting, mood, natural visible hands, and luxury catalog framing. It avoids asking for the final handbag or any similar accessory because the handbag is intended to be composited later through the product-lock layer.
 
-Prompt variants add composition-specific pressure without changing the artifact lifecycle. Examples include `editorial_empty_hand_v1`, `natural_side_carry_space_v1`, and `minimal_accessory_free_v1`. Pipeline traces record the selected variant and composition target summary.
+Prompt variants add composition-specific pressure without changing the artifact lifecycle. Examples include `strict_empty_hand_no_accessory_v1`, `studio_safe_pose_v1`, and `minimal_accessory_free_v1`. Pipeline traces record the selected variant, final catalog action label, hero-stage action prompt, forbidden generated objects, and composition target summary.
+
+## Hero Action vs Final Catalog Action
+
+The final catalog action can remain product-facing, such as "walking with handbag." The hero-still generation action is deliberately product-empty, such as "empty hands visible, right hand relaxed near the right hip, clear placement space." The image model should generate a scene canvas, not the sellable handbag. Later product-locked compositing owns the product pixels.
+
+Current empty-hand action assets:
+
+- `standing_right_hand_visible`
+- `slow_walk_right_hand_visible`
+
+The older `walking_with_bag` action remains available for comparison but now also carries a safer `hero_action_prompt_fragment`.
 
 ## Hero-Still Prompt Tuning
 
 `scripts/tune_hero_prompts.py` runs a small grid of prompt variants and seeds through the existing Diffusers hero-still route, then writes an ignored contact sheet and a tracked Markdown review table. Manual review is expected because the current pipeline has no vision-based quality scorer.
+
+Current tuning finding: the first contact sheet technically succeeded but generated unwanted bag-like accessories. The current mitigation is stronger hero-action decoupling plus the `strict_empty_hand_no_accessory_v1` variant.
+
+Latest tuning result: `standing_right_hand_visible` produces the best no-accessory candidates. `slow_walk_right_hand_visible` still frequently generates bag-like objects and should remain a comparison route until the action is simplified or a stronger prompt/profile is selected.
 
 ## Aspect Ratio Handling
 

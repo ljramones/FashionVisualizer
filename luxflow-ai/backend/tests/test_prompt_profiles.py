@@ -14,6 +14,17 @@ def _recipe():
     )
 
 
+def _empty_hand_recipe():
+    return compile_scene_recipe(
+        GenerationRequest(
+            product_id="black_structured_bag",
+            model_id="adult_female_editorial_01",
+            location_id="hotel_lobby",
+            action_id="standing_right_hand_visible",
+        )
+    )
+
+
 def test_prompt_includes_scene_context() -> None:
     bundle = build_hero_still_prompt(_recipe(), "sdxl_turbo_preview")
 
@@ -25,23 +36,28 @@ def test_prompt_includes_scene_context() -> None:
 
 def test_prompt_avoids_exact_product_generation() -> None:
     bundle = build_hero_still_prompt(
-        _recipe(),
+        _empty_hand_recipe(),
         "sdxl_turbo_preview",
-        "editorial_empty_hand_v1",
+        "strict_empty_hand_no_accessory_v1",
     )
     prompt = bundle.positive_prompt.lower()
 
     assert "exact black structured handbag" not in prompt
-    assert "right hand clear" in prompt
-    assert "product composited later" in prompt
-    assert "no prominent bag" in prompt
+    assert "handbag" not in prompt
+    assert " purse" not in f" {prompt}"
+    assert " tote" not in f" {prompt}"
+    assert " clutch" not in f" {prompt}"
+    assert "clear placement area" in prompt
+    assert "clear placement" in prompt
     assert "right hand" in prompt
-    assert bundle.prompt_variant_id == "editorial_empty_hand_v1"
-    assert "right_hand" in bundle.composition_target_summary
+    assert bundle.prompt_variant_id == "strict_empty_hand_no_accessory_v1"
+    assert bundle.final_catalog_action_label == "standing with handbag"
+    assert "right_hip" in bundle.composition_target_summary
+    assert bundle.no_accessory_strategy is True
 
 
 def test_negative_prompt_contains_product_preservation_terms() -> None:
-    bundle = build_hero_still_prompt(_recipe(), "sdxl_base_quality")
+    bundle = build_hero_still_prompt(_empty_hand_recipe(), "sdxl_base_quality")
     negative = bundle.negative_prompt.lower()
 
     for term in [
@@ -57,5 +73,19 @@ def test_negative_prompt_contains_product_preservation_terms() -> None:
         "malformed handbag",
         "purse",
         "bag",
+        "tote",
+        "clutch",
+        "backpack",
+        "branded accessory",
     ]:
         assert term in negative
+
+
+def test_prompt_builder_prefers_hero_action_prompt_fragment() -> None:
+    recipe = _empty_hand_recipe()
+    bundle = build_hero_still_prompt(recipe, "sdxl_turbo_preview")
+
+    assert recipe.action.prompt_fragment.lower() not in bundle.positive_prompt.lower()
+    assert recipe.action.hero_action_prompt_fragment is not None
+    assert recipe.action.hero_action_prompt_fragment in bundle.positive_prompt
+    assert bundle.hero_action_prompt_used == recipe.action.hero_action_prompt_fragment

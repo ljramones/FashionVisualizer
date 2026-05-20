@@ -74,6 +74,14 @@ export default function PipelineTraceViewer({ entry }: PipelineTraceViewerProps)
             <span>
               variant: {trace.hero_still_generation.prompt_variant_id ?? "n/a"}
             </span>
+            <span>
+              final action:{" "}
+              {trace.hero_still_generation.final_catalog_action_label ?? "n/a"}
+            </span>
+            <span>
+              no-accessory strategy:{" "}
+              {String(trace.hero_still_generation.no_accessory_strategy ?? false)}
+            </span>
             <span>model: {trace.hero_still_generation.model_id}</span>
             <span>device: {trace.hero_still_generation.device}</span>
             <span>
@@ -93,6 +101,14 @@ export default function PipelineTraceViewer({ entry }: PipelineTraceViewerProps)
             </span>
             <span>
               target: {trace.hero_still_generation.composition_target_summary ?? "n/a"}
+            </span>
+            <span>
+              hero action: {trace.hero_still_generation.hero_action_prompt_used ?? "n/a"}
+            </span>
+            <span>
+              forbidden:{" "}
+              {(trace.hero_still_generation.forbidden_generated_objects ?? []).join(", ") ||
+                "n/a"}
             </span>
             <span>fallback used: {String(trace.hero_still_generation.fallback_used)}</span>
             <span>duration: {trace.hero_still_generation.duration_seconds ?? "n/a"}s</span>

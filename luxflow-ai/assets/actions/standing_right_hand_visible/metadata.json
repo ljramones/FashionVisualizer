@@ -1,0 +1,25 @@
+{
+  "id": "standing_right_hand_visible",
+  "name": "Standing Right Hand Visible",
+  "prompt_fragment": "The final catalog scene presents the model standing with the handbag placed near the right hand.",
+  "camera_motion": "locked editorial camera with a gentle push-in",
+  "product_interaction": "product is intended to sit near the relaxed right hand after compositing",
+  "loop_policy": "ping_pong",
+  "product_anchor_target": "right_hip",
+  "composition_space_hint": "clear placement area beside the right leg and right hip",
+  "occlusion_hint": "right hand visible, relaxed fingers, no object currently held",
+  "final_catalog_action_label": "standing with handbag",
+  "hero_action_prompt_fragment": "adult editorial model standing in a relaxed pose with right hand visible near the right hip, empty hands, clean side silhouette, clear placement area beside the right leg",
+  "hero_pose_intent": "stable standing pose with visible right hand and clear side placement zone",
+  "forbidden_generated_objects": [
+    "handbag",
+    "bag",
+    "purse",
+    "tote",
+    "clutch",
+    "luggage",
+    "backpack",
+    "strap",
+    "branded accessory"
+  ]
+}

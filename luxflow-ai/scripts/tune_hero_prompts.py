@@ -14,13 +14,15 @@ from PIL import Image, ImageDraw
 from pydantic import BaseModel
 
 DEFAULT_VARIANTS = [
-    "editorial_empty_hand_v1",
-    "natural_side_carry_space_v1",
+    "strict_empty_hand_no_accessory_v1",
+    "studio_safe_pose_v1",
     "minimal_accessory_free_v1",
 ]
+DEFAULT_ACTIONS = ["standing_right_hand_visible"]
 
 
 class PromptTuningResult(BaseModel):
+    action_id: str
     variant_id: str
     seed: int
     status: str
@@ -30,6 +32,11 @@ class PromptTuningResult(BaseModel):
     output_path: str
     trace_path: str
     positive_prompt_preview: str | None
+    negative_prompt_preview: str | None
+    final_catalog_action_label: str | None
+    hero_action_prompt_used: str | None
+    forbidden_generated_objects: list[str]
+    no_accessory_strategy: bool
     manual_review: dict[str, str]
 
 
@@ -45,6 +52,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", choices=["auto", "mps", "cpu", "cuda"], default="auto")
     parser.add_argument("--seeds", type=int, nargs="+", default=[42, 43])
     parser.add_argument("--variants", nargs="+", default=DEFAULT_VARIANTS)
+    parser.add_argument("--actions", nargs="+", default=DEFAULT_ACTIONS)
     parser.add_argument("--run-id")
     return parser.parse_args()
 
@@ -71,7 +79,7 @@ def _configure_generation(args: argparse.Namespace, variant_id: str) -> None:
 def _manual_review_template() -> dict[str, str]:
     return {
         "hand_area_usable": "",
-        "no_unwanted_bag": "",
+        "no_unwanted_accessory": "",
         "model_action_believable": "",
         "scene_matches": "",
         "recommended": "",
@@ -81,13 +89,16 @@ def _manual_review_template() -> dict[str, str]:
 def run_variant_seed(
     args: argparse.Namespace,
     run_dir: Path,
+    action_id: str,
     variant_id: str,
     seed: int,
 ) -> PromptTuningResult:
     _configure_generation(args, variant_id)
-    request = load_golden_generation_request().model_copy(update={"seed": seed})
+    request = load_golden_generation_request().model_copy(
+        update={"seed": seed, "action_id": action_id}
+    )
     recipe = compile_scene_recipe(request)
-    output_root = run_dir / variant_id
+    output_root = run_dir / action_id / variant_id
     entry = run_handbag_pipeline(recipe, output_root=output_root)
     trace_path = output_root / entry.recipe_hash / "pipeline_trace.json"
     trace = json.loads(trace_path.read_text(encoding="utf-8"))
@@ -95,6 +106,7 @@ def run_variant_seed(
     hero_path = _artifact_path(entry.artifacts, "hero_still")
 
     return PromptTuningResult(
+        action_id=action_id,
         variant_id=variant_id,
         seed=seed,
         status="success_real_generation"
@@ -106,6 +118,11 @@ def run_variant_seed(
         output_path=hero_path,
         trace_path=trace_path.relative_to(project_root()).as_posix(),
         positive_prompt_preview=hero_generation.get("positive_prompt_preview"),
+        negative_prompt_preview=hero_generation.get("negative_prompt_preview"),
+        final_catalog_action_label=hero_generation.get("final_catalog_action_label"),
+        hero_action_prompt_used=hero_generation.get("hero_action_prompt_used"),
+        forbidden_generated_objects=hero_generation.get("forbidden_generated_objects", []),
+        no_accessory_strategy=bool(hero_generation.get("no_accessory_strategy")),
         manual_review=_manual_review_template(),
     )
 
@@ -128,7 +145,7 @@ def make_contact_sheet(results: list[PromptTuningResult], contact_sheet_path: Pa
             sheet.paste(image.convert("RGB"), (x, y))
             draw.text(
                 (x + 6, y + thumb_height + 6),
-                f"{result.variant_id}\nseed {result.seed} | {result.status}",
+                f"{result.action_id}\n{result.variant_id}\nseed {result.seed} | {result.status}",
                 fill=(20, 20, 20),
             )
 
@@ -153,6 +170,7 @@ def write_report(
         "guidance_scale": args.guidance_scale,
         "seeds": args.seeds,
         "variants": args.variants,
+        "actions": args.actions,
         "contact_sheet": contact_sheet_path.relative_to(project_root()).as_posix(),
         "results": [result.model_dump(mode="json") for result in results],
     }
@@ -168,17 +186,23 @@ def write_report(
         f"Image size: `{args.width}x{args.height}`",
         f"Steps: `{args.steps}`",
         f"Seeds: `{', '.join(str(seed) for seed in args.seeds)}`",
+        f"Actions: `{', '.join(args.actions)}`",
         f"Contact sheet: `{report['contact_sheet']}`",
         "",
         "Manual review columns are intentionally blank for human scoring.",
         "",
-        "| variant | seed | status | output | hand area usable? | no unwanted bag? | "
+        "Current tuning focus: separate final catalog action from hero-stage action so "
+        "the image model produces empty visible hands and clean placement space instead "
+        "of hallucinated accessories.",
+        "",
+        "| action | variant | seed | status | output | hand area usable? | "
+        "no unwanted accessory? | "
         "model/action believable? | scene matches? | recommended? |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for result in results:
         lines.append(
-            f"| {result.variant_id} | {result.seed} | {result.status} | "
+            f"| {result.action_id} | {result.variant_id} | {result.seed} | {result.status} | "
             f"`{result.output_path}` |  |  |  |  |  |"
         )
     docs_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -195,10 +219,11 @@ def main() -> None:
     run_dir = project_root() / "assets/outputs/prompt_tuning" / run_id
     results: list[PromptTuningResult] = []
 
-    for variant_id in args.variants:
-        for seed in args.seeds:
-            print(f"generating variant={variant_id} seed={seed}")
-            results.append(run_variant_seed(args, run_dir, variant_id, seed))
+    for action_id in args.actions:
+        for variant_id in args.variants:
+            for seed in args.seeds:
+                print(f"generating action={action_id} variant={variant_id} seed={seed}")
+                results.append(run_variant_seed(args, run_dir, action_id, variant_id, seed))
 
     contact_sheet_path = run_dir / "contact_sheet.png"
     make_contact_sheet(results, contact_sheet_path)

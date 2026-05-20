@@ -3,7 +3,7 @@ import json
 
 from backend.app import config
 from backend.app.config import project_root
-from backend.app.contracts import CatalogEntry
+from backend.app.contracts import CatalogEntry, GenerationRequest
 from backend.app.demo import load_golden_generation_request
 from backend.app.pipeline.handbag_pipeline import run_handbag_pipeline
 from backend.app.recipes.scene_recipe_compiler import compile_scene_recipe
@@ -12,6 +12,11 @@ from backend.app.routing.model_router import choose_route
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the LuxFlow AI golden recipe demo.")
+    parser.add_argument(
+        "--recipe-file",
+        default="assets/demo/golden_recipe.json",
+        help="Recipe JSON path relative to the project root.",
+    )
     parser.add_argument("--real-image", action="store_true", help="Enable real image generation.")
     parser.add_argument("--profile-id", help="Use a named image generation profile.")
     parser.add_argument("--prompt-variant", help="Use a named hero-still prompt variant.")
@@ -49,8 +54,16 @@ def apply_cli_overrides(args: argparse.Namespace) -> None:
         config.settings.image_device = args.device
 
 
-def run_golden_demo() -> CatalogEntry:
-    request = load_golden_generation_request()
+def _load_recipe(recipe_file: str) -> GenerationRequest:
+    if recipe_file == "assets/demo/golden_recipe.json":
+        return load_golden_generation_request()
+    path = project_root() / recipe_file
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return GenerationRequest.model_validate(payload)
+
+
+def run_golden_demo(recipe_file: str = "assets/demo/golden_recipe.json") -> CatalogEntry:
+    request = _load_recipe(recipe_file)
     recipe = compile_scene_recipe(request)
     choose_route(recipe)
     return run_handbag_pipeline(recipe)
@@ -64,14 +77,16 @@ def _artifact_path(entry: CatalogEntry, kind: str) -> str:
 
 
 def main() -> None:
-    apply_cli_overrides(parse_args())
+    args = parse_args()
+    apply_cli_overrides(args)
 
-    entry = run_golden_demo()
+    entry = run_golden_demo(args.recipe_file)
     output_dir = project_root() / "assets/outputs" / entry.recipe_hash
     trace = json.loads((output_dir / "pipeline_trace.json").read_text(encoding="utf-8"))
     hero_generation = trace.get("hero_still_generation", {})
 
     print("LuxFlow AI golden demo complete")
+    print(f"recipe_file: {args.recipe_file}")
     print(f"request_hash: {entry.recipe_hash}")
     print(f"output_directory: {output_dir.relative_to(project_root()).as_posix()}")
     print(f"hero_still: {_artifact_path(entry, 'hero_still')}")
@@ -84,6 +99,9 @@ def main() -> None:
     print(f"model_id: {hero_generation.get('model_id')}")
     print(f"profile_id: {hero_generation.get('profile_id')}")
     print(f"prompt_variant_id: {hero_generation.get('prompt_variant_id')}")
+    print(f"final_catalog_action_label: {hero_generation.get('final_catalog_action_label')}")
+    print(f"hero_action_prompt_used: {hero_generation.get('hero_action_prompt_used')}")
+    print(f"no_accessory_strategy: {hero_generation.get('no_accessory_strategy')}")
     print(f"device: {hero_generation.get('device')}")
     print(f"width: {hero_generation.get('width')}")
     print(f"height: {hero_generation.get('height')}")

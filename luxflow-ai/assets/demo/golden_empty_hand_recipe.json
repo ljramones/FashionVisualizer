@@ -1,0 +1,9 @@
+{
+  "product_id": "black_structured_bag",
+  "model_id": "adult_female_editorial_01",
+  "location_id": "hotel_lobby",
+  "action_id": "standing_right_hand_visible",
+  "seed": 42,
+  "aspect_ratio": "9:16",
+  "mode": "preview"
+}

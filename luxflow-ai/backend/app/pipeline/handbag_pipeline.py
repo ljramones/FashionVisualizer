@@ -55,6 +55,12 @@ def _render_hero_still(recipe: SceneRecipe, hero_path: Path) -> tuple[Path, dict
         "negative_prompt_preview": None,
         "prompt_variant_id": settings.image_prompt_variant_id,
         "composition_target_summary": None,
+        "final_catalog_action_label": (
+            recipe.action.final_catalog_action_label or recipe.action.name
+        ),
+        "hero_action_prompt_used": recipe.action.hero_action_prompt_fragment,
+        "forbidden_generated_objects": recipe.action.forbidden_generated_objects,
+        "no_accessory_strategy": bool(recipe.action.hero_action_prompt_fragment),
         "width": None,
         "height": None,
         "steps": None,
@@ -104,6 +110,26 @@ def _render_hero_still(recipe: SceneRecipe, hero_path: Path) -> tuple[Path, dict
             "negative_prompt_preview": getattr(result, "negative_prompt_preview", None),
             "prompt_variant_id": getattr(result, "prompt_variant_id", None),
             "composition_target_summary": getattr(result, "composition_target_summary", None),
+            "final_catalog_action_label": getattr(
+                result,
+                "final_catalog_action_label",
+                recipe.action.final_catalog_action_label or recipe.action.name,
+            ),
+            "hero_action_prompt_used": getattr(
+                result,
+                "hero_action_prompt_used",
+                recipe.action.hero_action_prompt_fragment,
+            ),
+            "forbidden_generated_objects": getattr(
+                result,
+                "forbidden_generated_objects",
+                recipe.action.forbidden_generated_objects,
+            ),
+            "no_accessory_strategy": getattr(
+                result,
+                "no_accessory_strategy",
+                bool(recipe.action.hero_action_prompt_fragment),
+            ),
             "width": getattr(result, "width", None),
             "height": getattr(result, "height", None),
             "steps": getattr(result, "steps", None),

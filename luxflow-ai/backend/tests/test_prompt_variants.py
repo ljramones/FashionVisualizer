@@ -7,12 +7,14 @@ def test_prompt_variants_include_expected_ids() -> None:
     assert "editorial_empty_hand_v1" in variant_ids
     assert "natural_side_carry_space_v1" in variant_ids
     assert "minimal_accessory_free_v1" in variant_ids
+    assert "strict_empty_hand_no_accessory_v1" in variant_ids
 
 
 def test_prompt_variant_metadata_targets_empty_product_space() -> None:
-    variant = get_prompt_variant("editorial_empty_hand_v1")
+    variant = get_prompt_variant("strict_empty_hand_no_accessory_v1")
 
     assert variant is not None
     assert any("empty" in addition for addition in variant.positive_additions)
     assert "bag" in variant.negative_additions
     assert "purse" in variant.negative_additions
+    assert "object in hand" in variant.negative_additions

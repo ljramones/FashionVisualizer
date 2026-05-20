@@ -7,5 +7,21 @@
   "loop_policy": "ping_pong",
   "product_anchor_target": "right_hand",
   "composition_space_hint": "clear space beside the model's right hip for later handbag placement",
-  "occlusion_hint": "right hand visible with relaxed fingers and no object currently held"
+  "occlusion_hint": "right hand visible with relaxed fingers and no object currently held",
+  "final_catalog_action_label": "standing turn with handbag",
+  "hero_action_prompt_fragment": "adult editorial model standing in a gentle turn with empty hands visible, right hand relaxed beside the right hip, clean side silhouette, no object held",
+  "hero_pose_intent": "simple turn pose with visible relaxed right hand for later product placement",
+  "forbidden_generated_objects": [
+    "handbag",
+    "bag",
+    "purse",
+    "tote",
+    "clutch",
+    "luggage",
+    "shopping bag",
+    "backpack",
+    "strap",
+    "chain strap",
+    "branded accessory"
+  ]
 }

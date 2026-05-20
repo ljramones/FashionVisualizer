@@ -14,6 +14,10 @@ Actual model execution is intentionally deferred to later implementation passes.
 - ✅ product-lock placeholder
 - ✅ frontend workflow preview
 - ✅ optional Diffusers hero-still route with placeholder fallback
+- ✅ real SDXL hero-still smoke path on MPS
+- ✅ hero-stage action prompts separated from final catalog action labels
+- ✅ prompt tuning contact-sheet script
+- ⏳ product-locked composite v1 with real source product imagery
 - ⏳ real LTX video route
 - ⏳ ComfyUI visual route
 
@@ -124,6 +128,8 @@ Set `VITE_API_BASE_URL=http://localhost:8000` in `frontend/.env` if needed.
 ## Run the Golden Demo
 
 The canonical demo request is stored at `assets/demo/golden_recipe.json`.
+For real hero-still generation, prefer `assets/demo/golden_empty_hand_recipe.json`;
+it keeps the final catalog goal but asks the image model for an empty-hand scene canvas.
 
 Start the backend:
 
@@ -146,6 +152,12 @@ Run from CLI:
 ```bash
 cd luxflow-ai
 python scripts/run_golden_demo.py
+```
+
+Run the empty-hand hero-still recipe:
+
+```bash
+python scripts/run_golden_demo.py --recipe-file assets/demo/golden_empty_hand_recipe.json
 ```
 
 Run through the API:
@@ -241,7 +253,11 @@ python scripts/run_golden_demo.py \
 
 ## Hero-Still Prompt Strategy
 
-The generated hero still is a scene canvas, not the final product visualization. The prompt asks Diffusers for the adult model, location, action, lighting, and campaign framing while intentionally avoiding the exact handbag. The prompt leaves natural hand placement and empty space for later product-locked compositing.
+The generated hero still is a scene canvas, not the final product visualization. The prompt asks Diffusers for the adult model, location, lighting, campaign framing, and a hero-stage pose with visible empty hands. It intentionally avoids asking for the exact handbag. The prompt leaves natural hand placement and empty space for later product-locked compositing.
+
+## Hero Action vs Final Catalog Action
+
+The final catalog goal can still be "model with handbag." The hero-still generation goal is different: "model ready for handbag." Action metadata now separates `final_catalog_action_label` from `hero_action_prompt_fragment`, and the trace records both. Forbidden generated objects such as handbags, purses, totes, straps, and branded accessories are pushed into the negative prompt instead of appearing in the positive prompt.
 
 ## Hero-Still Prompt Tuning
 
@@ -250,6 +266,8 @@ Prompt variants target usable composition space for later handbag placement. Run
 ```bash
 python scripts/tune_hero_prompts.py \
   --profile-id sdxl_turbo_preview \
+  --actions standing_right_hand_visible slow_walk_right_hand_visible \
+  --variants strict_empty_hand_no_accessory_v1 studio_safe_pose_v1 minimal_accessory_free_v1 \
   --width 512 \
   --height 768 \
   --steps 2 \
@@ -257,6 +275,8 @@ python scripts/tune_hero_prompts.py \
 ```
 
 Generated images and contact sheets stay under ignored `assets/outputs/prompt_tuning/`. The tracked summary in `docs/prompt_tuning_results.md` is intended for manual review, not automated scoring.
+
+Current tuning finding: standing empty-hand actions produce the best no-obvious-accessory candidates; slow-walk actions still tend to hallucinate bag-like objects and should stay out of the product-compositing path for now.
 
 ## Aspect Ratio Handling
 

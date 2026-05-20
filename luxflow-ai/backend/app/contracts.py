@@ -57,6 +57,10 @@ class ActionRef(BaseModel):
     product_anchor_target: ProductAnchorTarget | None = None
     composition_space_hint: str | None = None
     occlusion_hint: str | None = None
+    hero_action_prompt_fragment: str | None = None
+    hero_pose_intent: str | None = None
+    final_catalog_action_label: str | None = None
+    forbidden_generated_objects: list[str] = Field(default_factory=list)
 
 
 class GenerationRequest(BaseModel):

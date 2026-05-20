@@ -1,4 +1,4 @@
-from backend.app.contracts import GenerationMode, GenerationRequest
+from backend.app.contracts import ActionRef, GenerationMode, GenerationRequest
 from backend.app.recipes.scene_recipe_compiler import request_hash
 
 
@@ -31,3 +31,23 @@ def test_request_hash_is_deterministic() -> None:
 
     assert request_hash(first) == request_hash(second)
     assert len(request_hash(first)) == 16
+
+
+def test_action_ref_accepts_hero_stage_fields() -> None:
+    action = ActionRef(
+        id="standing_right_hand_visible",
+        name="Standing Right Hand Visible",
+        prompt_fragment="Final catalog action includes the product.",
+        camera_motion="locked camera",
+        product_interaction="product composited later",
+        loop_policy="ping_pong",
+        product_anchor_target="right_hip",
+        hero_action_prompt_fragment="empty hands visible with clean right side placement space",
+        hero_pose_intent="visible relaxed right hand",
+        final_catalog_action_label="standing with handbag",
+        forbidden_generated_objects=["handbag", "bag", "purse"],
+    )
+
+    assert action.hero_action_prompt_fragment is not None
+    assert action.final_catalog_action_label == "standing with handbag"
+    assert "purse" in action.forbidden_generated_objects

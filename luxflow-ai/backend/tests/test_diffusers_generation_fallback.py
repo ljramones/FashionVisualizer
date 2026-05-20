@@ -54,6 +54,10 @@ def test_missing_diffusers_falls_back_cleanly(tmp_path, monkeypatch) -> None:
                 "negative_prompt_preview": "negative preview",
                 "prompt_variant_id": "editorial_empty_hand_v1",
                 "composition_target_summary": "right_hand: clear product space",
+                "final_catalog_action_label": "walking with handbag",
+                "hero_action_prompt_used": "empty hands visible near right hip",
+                "forbidden_generated_objects": ["handbag", "bag", "purse"],
+                "no_accessory_strategy": True,
                 "width": 512,
                 "height": 768,
                 "steps": 2,
@@ -95,6 +99,14 @@ def test_missing_diffusers_falls_back_cleanly(tmp_path, monkeypatch) -> None:
     )
     assert trace["hero_still_generation"]["prompt_variant_id"] == "editorial_empty_hand_v1"
     assert "right_hand" in trace["hero_still_generation"]["composition_target_summary"]
+    assert trace["hero_still_generation"]["final_catalog_action_label"] == (
+        "walking with handbag"
+    )
+    assert trace["hero_still_generation"]["hero_action_prompt_used"] == (
+        "empty hands visible near right hip"
+    )
+    assert trace["hero_still_generation"]["no_accessory_strategy"] is True
+    assert "purse" in trace["hero_still_generation"]["forbidden_generated_objects"]
     assert "diffusers missing in test" in trace["hero_still_generation"]["notes"]
 
 

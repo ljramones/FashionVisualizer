@@ -24,9 +24,12 @@
 - product-empty hero-still prompt profile
 - prompt variants for product-empty composition targets
 - prompt tuning contact-sheet script
+- hero-stage action prompts separated from final catalog action labels
+- empty-hand golden recipe for product-compositing prep
 
 ## Not Yet Implemented
 
+- product-locked composite v1 with real source product imagery
 - ComfyUI route execution
 - LTX route execution
 - real video export
@@ -53,3 +56,9 @@ Updated prompt/aspect result: SDXL Turbo generated a real portrait `512x768` her
 ## Hero-Still Prompt Tuning
 
 `scripts/tune_hero_prompts.py` generates variant/seed grids for manual review. The current variants focus on empty hand placement, side-carry composition space, and avoiding hallucinated bags or branded accessories. Tuning outputs are ignored; `docs/prompt_tuning_results.md` records the review table.
+
+## Current Prompt Tuning Finding
+
+Initial real prompt tuning produced valid Diffusers images but all reviewed outputs contained unwanted handbag or purse-like accessories. The issue is semantic leakage from the final catalog intent into the hero still. The current pass separates final catalog actions such as "walking with handbag" from hero-stage prompts such as "empty hands visible with clean placement space."
+
+Latest review: standing empty-hand actions produce several no-obvious-accessory candidates, while slow-walk actions still tend to generate handbag-like objects. Product-lock refinement should use a standing candidate first, after manual confirmation of hand and placement usability.

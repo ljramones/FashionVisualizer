@@ -26,6 +26,10 @@ class GenerationResult(BaseModel):
     negative_prompt_preview: str | None = None
     prompt_variant_id: str | None = None
     composition_target_summary: str | None = None
+    final_catalog_action_label: str | None = None
+    hero_action_prompt_used: str | None = None
+    forbidden_generated_objects: list[str] = Field(default_factory=list)
+    no_accessory_strategy: bool = False
     aspect_ratio_requested: str | None = None
     aspect_ratio_resolved: str | None = None
     prompt_strategy: str = "product_empty_scene_for_later_composite"
@@ -224,6 +228,10 @@ def generate_hero_still_with_diffusers(
         "negative_prompt_preview": _preview(prompt_bundle.negative_prompt),
         "prompt_variant_id": prompt_bundle.prompt_variant_id,
         "composition_target_summary": prompt_bundle.composition_target_summary,
+        "final_catalog_action_label": prompt_bundle.final_catalog_action_label,
+        "hero_action_prompt_used": prompt_bundle.hero_action_prompt_used,
+        "forbidden_generated_objects": prompt_bundle.forbidden_generated_objects,
+        "no_accessory_strategy": prompt_bundle.no_accessory_strategy,
         "aspect_ratio_requested": recipe.aspect_ratio,
         "aspect_ratio_resolved": _aspect_ratio(width, height),
         "prompt_profile_used": profile.profile_id,

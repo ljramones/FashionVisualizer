@@ -82,7 +82,24 @@ python scripts/run_golden_demo.py \
 
 ## Hero-Still Prompt Strategy
 
-The real hero still is a product-empty scene base. It should generate the adult model, location, walking/standing action, lighting, mood, and catalog framing. It should not generate the exact handbag. The prompt leaves natural hand placement and empty space near one hand so the later product-locked composite can insert the real product layer.
+The real hero still is a product-empty scene base. It should generate the adult model, location, hero-stage walking/standing pose, lighting, mood, and catalog framing. It should not generate the exact handbag or any replacement accessory. The prompt leaves natural hand placement and empty space near one hand so the later product-locked composite can insert the real product layer.
+
+Use the empty-hand demo recipe for real hero-still work:
+
+```bash
+python scripts/run_golden_demo.py \
+  --recipe-file assets/demo/golden_empty_hand_recipe.json \
+  --real-image \
+  --profile-id sdxl_turbo_preview \
+  --prompt-variant strict_empty_hand_no_accessory_v1 \
+  --width 512 \
+  --height 768 \
+  --steps 2
+```
+
+## Hero Action vs Final Catalog Action
+
+Final catalog metadata may still describe a product-selling action such as "standing with handbag." The image-generation prompt uses `hero_action_prompt_fragment`, which should describe empty visible hands and clean placement space without asking the model to generate a bag, purse, tote, clutch, strap, or branded accessory. The trace records both fields for review.
 
 Run a prompt variant directly:
 
@@ -90,7 +107,7 @@ Run a prompt variant directly:
 python scripts/run_golden_demo.py \
   --real-image \
   --profile-id sdxl_turbo_preview \
-  --prompt-variant editorial_empty_hand_v1 \
+  --prompt-variant strict_empty_hand_no_accessory_v1 \
   --width 512 \
   --height 768 \
   --steps 2
@@ -101,6 +118,8 @@ Run a prompt tuning grid:
 ```bash
 python scripts/tune_hero_prompts.py \
   --profile-id sdxl_turbo_preview \
+  --actions standing_right_hand_visible slow_walk_right_hand_visible \
+  --variants strict_empty_hand_no_accessory_v1 studio_safe_pose_v1 minimal_accessory_free_v1 \
   --width 512 \
   --height 768 \
   --steps 2 \

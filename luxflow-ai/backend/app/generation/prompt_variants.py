@@ -11,6 +11,35 @@ class HeroPromptVariant(BaseModel):
 
 PROMPT_VARIANTS: tuple[HeroPromptVariant, ...] = (
     HeroPromptVariant(
+        variant_id="strict_empty_hand_no_accessory_v1",
+        intended_use="Strongest no-accessory prompt for hero stills before product compositing.",
+        positive_additions=[
+            "empty hands clearly visible",
+            "no object held",
+            "accessory-free silhouette",
+            "clean right side placement zone",
+            "relaxed fingers",
+            "visible hand near hip",
+            "product placement zone left blank",
+        ],
+        negative_additions=[
+            "handbag",
+            "purse",
+            "bag",
+            "tote",
+            "clutch",
+            "luggage",
+            "backpack",
+            "shopping bag",
+            "strap",
+            "chain strap",
+            "object in hand",
+            "fake fashion accessory",
+            "branded accessory",
+        ],
+        notes=["Use when the model keeps hallucinating purses or side-carry accessories."],
+    ),
+    HeroPromptVariant(
         variant_id="editorial_empty_hand_v1",
         intended_use="Strongest product-empty instruction for later handbag compositing.",
         positive_additions=[
@@ -115,7 +144,7 @@ def get_prompt_variant(variant_id: str) -> HeroPromptVariant | None:
 
 
 def resolve_prompt_variant(variant_id: str | None) -> HeroPromptVariant:
-    selected = variant_id or "editorial_empty_hand_v1"
+    selected = variant_id or "strict_empty_hand_no_accessory_v1"
     variant = get_prompt_variant(selected)
     if variant is None:
         raise ValueError(f"Unknown hero prompt variant: {selected}")

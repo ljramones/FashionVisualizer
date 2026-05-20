@@ -49,6 +49,13 @@ export interface ActionRef {
   camera_motion: string;
   product_interaction: string;
   loop_policy: "ping_pong" | "none";
+  product_anchor_target?: "right_hand" | "left_hand" | "shoulder" | "right_hip" | "left_hip" | null;
+  composition_space_hint?: string | null;
+  occlusion_hint?: string | null;
+  hero_action_prompt_fragment?: string | null;
+  hero_pose_intent?: string | null;
+  final_catalog_action_label?: string | null;
+  forbidden_generated_objects?: string[];
 }
 
 export interface GenerationRequest {
@@ -94,6 +101,10 @@ export interface PipelineTrace {
     negative_prompt_preview?: string | null;
     prompt_variant_id?: string | null;
     composition_target_summary?: string | null;
+    final_catalog_action_label?: string | null;
+    hero_action_prompt_used?: string | null;
+    forbidden_generated_objects?: string[];
+    no_accessory_strategy?: boolean | null;
     aspect_ratio_requested?: string | null;
     aspect_ratio_resolved?: string | null;
     prompt_strategy?: string | null;
