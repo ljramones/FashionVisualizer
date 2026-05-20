@@ -18,8 +18,8 @@ This manual validation row records the first optional Diffusers route attempt. T
 
 ## Image Model Probe Results
 
-| model | device | status | duration | output | fallback used | notes |
-| --- | --- | --- | --- | --- | --- | --- |
-| black-forest-labs/FLUX.1-schnell | mps | fallback_gated_model_access | 0.800s | assets/outputs/model_probe/black-forest-labs__FLUX.1-schnell/8cd895924b6cbff4/hero_still.png | True | 401 Client Error. (Request ID: Root=1-6a0cff29-17f82a6335ec60485a83c335;54d4a3c7-99b5-4026-bc7c-e556d90bc0a5) |
-| stabilityai/sdxl-turbo | mps | success_real_generation | 4.391s | assets/outputs/model_probe/stabilityai__sdxl-turbo/8cd895924b6cbff4/hero_still.png | False | See docs/model_probe_results.md for full notes. |
-| stabilityai/stable-diffusion-xl-base-1.0 | mps | success_real_generation | 28.186s | assets/outputs/model_probe/stabilityai__stable-diffusion-xl-base-1.0/8cd895924b6cbff4/hero_still.png | False | See docs/model_probe_results.md for full notes. |
+| profile | model | device | status | duration | width | height | steps | guidance_scale | prompt_profile_used | supports_negative_prompt | output | fallback used | notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| sdxl_turbo_preview | stabilityai/sdxl-turbo | mps | success_real_generation | 4.661s | 512 | 768 | 2 | 0.0 | sdxl_turbo_preview | False | assets/outputs/model_probe/sdxl_turbo_preview/8cd895924b6cbff4/hero_still.png | False | See docs/model_probe_results.md for full notes. |
+| sdxl_base_quality | stabilityai/stable-diffusion-xl-base-1.0 | mps | success_real_generation | 19.045s | 512 | 768 | 20 | 6.0 | sdxl_base_quality | True | assets/outputs/model_probe/sdxl_base_quality/8cd895924b6cbff4/hero_still.png | False | See docs/model_probe_results.md for full notes. |
+| flux_schnell_quality_gated | black-forest-labs/FLUX.1-schnell | mps | fallback_gated_model_access | 0.819s | 512 | 768 | 4 | 0.0 | flux_schnell_quality_gated | False | assets/outputs/model_probe/flux_schnell_quality_gated/8cd895924b6cbff4/hero_still.png | True | 401 Client Error. (Request ID: Root=1-6a0d05d4-1626494e6cf738536a7fa8dc;d216d890-cdd6-4be9-9bd8-1361be952556) |

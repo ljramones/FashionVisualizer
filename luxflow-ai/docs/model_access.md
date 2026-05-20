@@ -39,9 +39,9 @@ Or use CLI overrides:
 ```bash
 python scripts/run_golden_demo.py \
   --real-image \
-  --model-id stabilityai/sdxl-turbo \
+  --profile-id sdxl_turbo_preview \
   --width 512 \
-  --height 512 \
+  --height 768 \
   --steps 2 \
   --guidance-scale 0.0
 ```
@@ -58,3 +58,13 @@ python scripts/probe_image_models.py
 The probe attempts each configured candidate against the golden recipe, records success/failure/fallback behavior, and writes `docs/model_probe_results.md`. It also writes a JSON copy under `assets/outputs/model_probe_results.json`, which remains ignored.
 
 Current observed result: FLUX.1-schnell requires gated Hugging Face access, while SDXL Turbo and SDXL base generated real hero stills locally on Apple `mps`.
+
+## Prompt And Dimension Profiles
+
+Use profile IDs when possible:
+
+- `sdxl_turbo_preview`: fast portrait smoke route, currently verified at `512x768`.
+- `sdxl_base_quality`: slower SDXL reference route, currently verified at `512x768`.
+- `flux_schnell_quality_gated`: keeps FLUX documented as the quality target, but requires access approval.
+
+The prompt strategy intentionally asks for a product-empty model/scene/action canvas. It avoids generating the exact handbag so that the product can be inserted later by product-locked compositing.

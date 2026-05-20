@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     enable_hosted_fallback: bool = False
     enable_real_image_generation: bool = False
     image_generation_backend: str = "diffusers"
+    image_profile_id: str = ""
     image_model_id: str = "black-forest-labs/FLUX.1-schnell"
     image_device: str = "auto"
     image_width: int = 1024

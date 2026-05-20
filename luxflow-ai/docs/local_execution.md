@@ -72,13 +72,21 @@ Run a specific candidate without editing `.env`:
 ```bash
 python scripts/run_golden_demo.py \
   --real-image \
-  --model-id stabilityai/sdxl-turbo \
+  --profile-id sdxl_turbo_preview \
   --width 512 \
-  --height 512 \
+  --height 768 \
   --steps 2 \
   --guidance-scale 0.0 \
   --device auto
 ```
+
+## Hero-Still Prompt Strategy
+
+The real hero still is a product-empty scene base. It should generate the adult model, location, walking/standing action, lighting, mood, and catalog framing. It should not generate the exact handbag. The prompt leaves natural hand placement and empty space near one hand so the later product-locked composite can insert the real product layer.
+
+## Aspect Ratio Handling
+
+`1:1` and `9:16` are supported at the public contract level. The Diffusers route resolves concrete dimensions per image profile and mode. Preview defaults stay small for local iteration, such as `512x512` for square and `512x768` for portrait. Explicit CLI dimensions are accepted when both width and height are provided and both are multiples of 8.
 
 Run frontend:
 

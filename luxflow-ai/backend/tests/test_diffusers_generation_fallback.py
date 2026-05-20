@@ -49,6 +49,18 @@ def test_missing_diffusers_falls_back_cleanly(tmp_path, monkeypatch) -> None:
                 "output_path": None,
                 "model_id": settings.image_model_id,
                 "device": "cpu",
+                "profile_id": "sdxl_turbo_preview",
+                "positive_prompt_preview": "positive preview",
+                "negative_prompt_preview": "negative preview",
+                "width": 512,
+                "height": 768,
+                "steps": 2,
+                "guidance_scale": 0.0,
+                "supports_negative_prompt": False,
+                "prompt_profile_used": "sdxl_turbo_preview",
+                "prompt_strategy": "product_empty_scene_for_later_composite",
+                "aspect_ratio_requested": "9:16",
+                "aspect_ratio_resolved": "9:16",
                 "dependency_status": {
                     "torch_available": False,
                     "diffusers_available": False,
@@ -73,6 +85,12 @@ def test_missing_diffusers_falls_back_cleanly(tmp_path, monkeypatch) -> None:
     assert trace["hero_still_generation"]["used_real_generation"] is False
     assert trace["hero_still_generation"]["fallback_used"] is True
     assert trace["hero_still_generation"]["error_summary"] == "No module named diffusers"
+    assert trace["hero_still_generation"]["profile_id"] == "sdxl_turbo_preview"
+    assert trace["hero_still_generation"]["width"] == 512
+    assert trace["hero_still_generation"]["height"] == 768
+    assert trace["hero_still_generation"]["prompt_strategy"] == (
+        "product_empty_scene_for_later_composite"
+    )
     assert "diffusers missing in test" in trace["hero_still_generation"]["notes"]
 
 

@@ -226,6 +226,25 @@ LUXFLOW_IMAGE_MODEL_ID=<working_model_id> \
 python scripts/run_golden_demo.py
 ```
 
+Profile-based portrait smoke test:
+
+```bash
+python scripts/run_golden_demo.py \
+  --real-image \
+  --profile-id sdxl_turbo_preview \
+  --width 512 \
+  --height 768 \
+  --steps 2
+```
+
+## Hero-Still Prompt Strategy
+
+The generated hero still is a scene canvas, not the final product visualization. The prompt asks Diffusers for the adult model, location, action, lighting, and campaign framing while intentionally avoiding the exact handbag. The prompt leaves natural hand placement and empty space for later product-locked compositing.
+
+## Aspect Ratio Handling
+
+The public request supports `1:1` and `9:16`. Generation dimensions are resolved by profile and mode: preview profiles use smaller model-friendly sizes such as `512x512` or `512x768`, while quality profiles can use larger portrait sizes when runtime is acceptable. Explicit CLI dimensions are validated and must be multiples of 8.
+
 ## Example Scene Recipe
 
 ```json

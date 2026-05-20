@@ -5,6 +5,7 @@ def test_probe_result_markdown_contains_status_and_model() -> None:
     markdown = render_results_markdown(
         [
             ProbeResult(
+                profile="example_profile",
                 model="example/model",
                 display_name="Example",
                 device="cpu",

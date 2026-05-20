@@ -5,6 +5,7 @@ from backend.app.generation.diffusers_hero_still import (
     probe_torch_devices,
     resolve_device,
 )
+from backend.app.generation.image_profiles import get_image_profiles
 from backend.app.generation.model_candidates import get_model_candidates
 
 
@@ -23,6 +24,8 @@ def get_system_capabilities() -> dict[str, object]:
             "cuda_available": devices["cuda_available"],
             "selected_generation_device": resolve_device(),
             "candidate_model_count": len(get_model_candidates()),
+            "image_profile_count": len(get_image_profiles()),
+            "selected_image_profile_id": settings.image_profile_id,
             "default_model_id": settings.image_model_id,
         }
     )

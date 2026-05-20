@@ -19,6 +19,9 @@
 - pipeline trace timing, dependency status, and fallback/error reporting
 - image model candidate metadata and probe script
 - confirmed real hero-still generation with SDXL Turbo and SDXL base
+- image generation profiles for SDXL Turbo, SDXL base, and gated FLUX
+- aspect-ratio-aware dimension resolver
+- product-empty hero-still prompt profile
 
 ## Not Yet Implemented
 
@@ -41,4 +44,6 @@ The model did not generate an image because Hugging Face returned gated model ac
 
 `scripts/probe_image_models.py` tests configured Diffusers candidates against the golden recipe and writes `docs/model_probe_results.md`. The first candidate remains FLUX.1-schnell as the quality target, with SDXL Turbo and SDXL base available as lower-friction smoke-test alternatives.
 
-Observed probe result: FLUX.1-schnell fell back due to gated model access, SDXL Turbo generated a real 512x512 hero still on `mps`, and SDXL base generated a real 768x768 hero still on `mps`.
+Observed probe result: FLUX.1-schnell fell back due to gated model access, while SDXL Turbo and SDXL base generated real `512x768` portrait hero stills on `mps`.
+
+Updated prompt/aspect result: SDXL Turbo generated a real portrait `512x768` hero still through the normal golden demo path with `profile_id: sdxl_turbo_preview` and `used_real_generation: true`.

@@ -84,6 +84,18 @@ export interface PipelineTrace {
     used_real_generation: boolean;
     model_id: string;
     device: string;
+    profile_id?: string | null;
+    width?: number | null;
+    height?: number | null;
+    steps?: number | null;
+    guidance_scale?: number | null;
+    supports_negative_prompt?: boolean | null;
+    positive_prompt_preview?: string | null;
+    negative_prompt_preview?: string | null;
+    aspect_ratio_requested?: string | null;
+    aspect_ratio_resolved?: string | null;
+    prompt_strategy?: string | null;
+    prompt_profile_used?: string | null;
     dependency_status: {
       torch_available: boolean;
       diffusers_available: boolean;

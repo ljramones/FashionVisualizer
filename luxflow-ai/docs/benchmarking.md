@@ -19,3 +19,5 @@ The optional Diffusers route was attempted with `black-forest-labs/FLUX.1-schnel
 Run `python scripts/probe_image_models.py` to test configured candidates against the golden recipe. The probe writes `docs/model_probe_results.md` and a JSON copy under ignored `assets/outputs/`.
 
 Current result: SDXL Turbo and SDXL base generated real hero stills on `mps`; FLUX.1-schnell fell back due to gated model access.
+
+The current profile-aware benchmark records prompt profile, output dimensions, steps, guidance scale, and negative prompt support. SDXL Turbo is the recommended fast local smoke profile for portrait `9:16` work before product compositing.

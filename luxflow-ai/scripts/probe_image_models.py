@@ -9,13 +9,14 @@ from backend.app import config
 from backend.app.config import project_root
 from backend.app.demo import load_golden_generation_request
 from backend.app.generation.diffusers_hero_still import generation_dependency_status
-from backend.app.generation.model_candidates import ImageModelCandidate, get_model_candidates
+from backend.app.generation.image_profiles import ImageGenerationProfile, get_image_profiles
 from backend.app.pipeline.handbag_pipeline import run_handbag_pipeline
 from backend.app.recipes.scene_recipe_compiler import compile_scene_recipe
 from pydantic import BaseModel
 
 
 class ProbeResult(BaseModel):
+    profile: str
     model: str
     display_name: str
     device: str
@@ -24,6 +25,12 @@ class ProbeResult(BaseModel):
     output: str | None
     fallback_used: bool
     used_real_generation: bool
+    width: int | None = None
+    height: int | None = None
+    steps: int | None = None
+    guidance_scale: float | None = None
+    prompt_profile_used: str | None = None
+    supports_negative_prompt: bool | None = None
     dependency_status: dict[str, object]
     error_summary: str | None = None
     notes: list[str]
@@ -52,21 +59,26 @@ def _status_from_trace(hero_generation: dict[str, Any]) -> str:
     return "fallback_runtime_error"
 
 
-def _apply_candidate_settings(candidate: ImageModelCandidate, device: str) -> None:
+def _apply_profile_settings(profile: ImageGenerationProfile, device: str) -> None:
     config.settings.enable_real_image_generation = True
     config.settings.image_generation_backend = "diffusers"
-    config.settings.image_model_id = candidate.id
-    config.settings.image_width = candidate.default_width
-    config.settings.image_height = candidate.default_height
-    config.settings.image_steps = candidate.expected_steps
-    config.settings.image_guidance_scale = candidate.guidance_scale
+    config.settings.image_profile_id = profile.profile_id
+    config.settings.image_model_id = profile.model_id
+    config.settings.image_width = 1024
+    config.settings.image_height = 1024
+    config.settings.image_steps = 4
+    config.settings.image_guidance_scale = 0.0
     config.settings.image_device = device
 
 
-def probe_candidate(candidate: ImageModelCandidate, device: str = "auto") -> ProbeResult:
-    _apply_candidate_settings(candidate, device)
+def probe_profile(profile: ImageGenerationProfile, device: str = "auto") -> ProbeResult:
+    _apply_profile_settings(profile, device)
     recipe = compile_scene_recipe(load_golden_generation_request())
-    output_root = project_root() / "assets/outputs/model_probe" / _safe_model_slug(candidate.id)
+    output_root = (
+        project_root()
+        / "assets/outputs/model_probe"
+        / _safe_model_slug(profile.profile_id)
+    )
 
     started = perf_counter()
     entry = run_handbag_pipeline(recipe, output_root=output_root)
@@ -79,20 +91,27 @@ def probe_candidate(candidate: ImageModelCandidate, device: str = "auto") -> Pro
     output_path = _artifact_path(entry.artifacts, "hero_still")
 
     notes = [
-        *candidate.license_note.splitlines(),
-        candidate.access_note,
+        *profile.license_note.splitlines(),
+        profile.access_note,
         *hero_generation.get("notes", []),
     ]
 
     return ProbeResult(
-        model=candidate.id,
-        display_name=candidate.display_name,
+        profile=profile.profile_id,
+        model=str(hero_generation.get("model_id", profile.model_id)),
+        display_name=profile.profile_id,
         device=str(hero_generation.get("device", "unknown")),
         status=_status_from_trace(hero_generation),
         duration_seconds=float(hero_generation.get("duration_seconds") or elapsed),
         output=output_path,
         fallback_used=bool(hero_generation.get("fallback_used")),
         used_real_generation=bool(hero_generation.get("used_real_generation")),
+        width=hero_generation.get("width"),
+        height=hero_generation.get("height"),
+        steps=hero_generation.get("steps"),
+        guidance_scale=hero_generation.get("guidance_scale"),
+        prompt_profile_used=hero_generation.get("prompt_profile_used"),
+        supports_negative_prompt=hero_generation.get("supports_negative_prompt"),
         dependency_status=hero_generation.get("dependency_status", generation_dependency_status()),
         error_summary=hero_generation.get("error_summary"),
         notes=notes,
@@ -100,7 +119,7 @@ def probe_candidate(candidate: ImageModelCandidate, device: str = "auto") -> Pro
 
 
 def _failed_subprocess_result(
-    candidate: ImageModelCandidate,
+    profile: ImageGenerationProfile,
     device: str,
     elapsed: float,
     output: str,
@@ -115,14 +134,17 @@ def _failed_subprocess_result(
     if summary is None:
         summary = lines[-1] if lines else "Probe process exited before returning a result."
 
-    notes = [candidate.license_note, candidate.access_note]
+    notes = [profile.license_note, profile.access_note]
     if retry_note:
         notes.append(retry_note)
-    notes.append("Probe subprocess failed; generation fallback could not complete in that process.")
+        notes.append(
+            "Probe subprocess failed; generation fallback could not complete in that process."
+        )
 
     return ProbeResult(
-        model=candidate.id,
-        display_name=candidate.display_name,
+        profile=profile.profile_id,
+        model=profile.model_id,
+        display_name=profile.profile_id,
         device=device,
         status="fallback_runtime_error",
         duration_seconds=round(elapsed, 3),
@@ -144,7 +166,7 @@ def _parse_child_result(output: str) -> ProbeResult | None:
 
 
 def run_candidate_subprocess(
-    candidate: ImageModelCandidate,
+    profile: ImageGenerationProfile,
     device: str = "auto",
     retry_note: str | None = None,
     timeout_seconds: int = 900,
@@ -153,7 +175,7 @@ def run_candidate_subprocess(
         sys.executable,
         __file__,
         "--probe-one",
-        candidate.id,
+        profile.profile_id,
         "--device",
         device,
     ]
@@ -170,7 +192,7 @@ def run_candidate_subprocess(
         elapsed = perf_counter() - started
     except subprocess.TimeoutExpired as exc:
         output = f"{exc.stdout or ''}\n{exc.stderr or ''}\nTimed out after {timeout_seconds}s."
-        return _failed_subprocess_result(candidate, device, timeout_seconds, output, retry_note)
+        return _failed_subprocess_result(profile, device, timeout_seconds, output, retry_note)
 
     output = f"{completed.stdout}\n{completed.stderr}"
     parsed = _parse_child_result(output)
@@ -178,18 +200,18 @@ def run_candidate_subprocess(
         if retry_note:
             parsed.notes.append(retry_note)
         return parsed
-    return _failed_subprocess_result(candidate, device, elapsed, output, retry_note)
+    return _failed_subprocess_result(profile, device, elapsed, output, retry_note)
 
 
-def probe_candidate_isolated(candidate: ImageModelCandidate) -> ProbeResult:
-    result = run_candidate_subprocess(candidate, device="auto")
+def probe_profile_isolated(profile: ImageGenerationProfile) -> ProbeResult:
+    result = run_candidate_subprocess(profile, device="auto")
     if (
         result.status == "fallback_runtime_error"
         and result.device in {"auto", "mps"}
         and "mps" in str(result.error_summary).lower()
     ):
         return run_candidate_subprocess(
-            candidate,
+            profile,
             device="cpu",
             retry_note="Auto/MPS probe failed; retried on CPU for smoke validation.",
         )
@@ -203,8 +225,9 @@ def render_results_markdown(results: list[ProbeResult]) -> str:
         "This file is generated by `python scripts/probe_image_models.py`. It records "
         "local model-access behavior for the golden recipe without committing generated outputs.",
         "",
-        "| model | device | status | duration | output | fallback used | notes |",
-        "| --- | --- | --- | --- | --- | --- | --- |",
+        "| profile | model | device | status | width | height | steps | guidance | "
+        "output | fallback used | notes |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for result in results:
         notes = " ".join(result.notes)
@@ -212,13 +235,17 @@ def render_results_markdown(results: list[ProbeResult]) -> str:
             notes = f"{notes} Error: {result.error_summary}"
         lines.append(
             "| "
+            f"{result.profile} | "
             f"{result.model} | "
             f"{result.device} | "
             f"{result.status} | "
-            f"{result.duration_seconds:.3f}s | "
+            f"{result.width or 'n/a'} | "
+            f"{result.height or 'n/a'} | "
+            f"{result.steps or 'n/a'} | "
+            f"{result.guidance_scale if result.guidance_scale is not None else 'n/a'} | "
             f"{result.output or 'n/a'} | "
             f"{result.fallback_used} | "
-            f"{notes} |"
+            f"{result.duration_seconds:.3f}s. {notes} |"
         )
     return "\n".join(lines) + "\n"
 
@@ -227,17 +254,26 @@ def render_benchmark_section(results: list[ProbeResult]) -> str:
     lines = [
         "## Image Model Probe Results",
         "",
-        "| model | device | status | duration | output | fallback used | notes |",
-        "| --- | --- | --- | --- | --- | --- | --- |",
+        "| profile | model | device | status | duration | width | height | steps | "
+        "guidance_scale | prompt_profile_used | supports_negative_prompt | output | "
+        "fallback used | notes |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for result in results:
         notes = result.error_summary or "See docs/model_probe_results.md for full notes."
         lines.append(
             "| "
+            f"{result.profile} | "
             f"{result.model} | "
             f"{result.device} | "
             f"{result.status} | "
             f"{result.duration_seconds:.3f}s | "
+            f"{result.width or 'n/a'} | "
+            f"{result.height or 'n/a'} | "
+            f"{result.steps or 'n/a'} | "
+            f"{result.guidance_scale if result.guidance_scale is not None else 'n/a'} | "
+            f"{result.prompt_profile_used or 'n/a'} | "
+            f"{result.supports_negative_prompt} | "
             f"{result.output or 'n/a'} | "
             f"{result.fallback_used} | "
             f"{notes} |"
@@ -276,19 +312,21 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.probe_one:
-        candidate = next(
-            candidate for candidate in get_model_candidates() if candidate.id == args.probe_one
+        profile = next(
+            profile
+            for profile in get_image_profiles()
+            if profile.profile_id == args.probe_one or profile.model_id == args.probe_one
         )
-        result = probe_candidate(candidate, device=args.device)
+        result = probe_profile(profile, device=args.device)
         print(f"__LUXFLOW_PROBE_RESULT__{result.model_dump_json()}")
         return
 
     results: list[ProbeResult] = []
     print("LuxFlow AI image model probe")
     print(f"dependencies: {generation_dependency_status()}")
-    for candidate in get_model_candidates():
-        print(f"probing: {candidate.id}")
-        result = probe_candidate_isolated(candidate)
+    for profile in get_image_profiles():
+        print(f"probing: {profile.profile_id} ({profile.model_id})")
+        result = probe_profile_isolated(profile)
         results.append(result)
         print(
             f"  status={result.status} device={result.device} "

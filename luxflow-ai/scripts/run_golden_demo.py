@@ -13,6 +13,7 @@ from backend.app.routing.model_router import choose_route
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the LuxFlow AI golden recipe demo.")
     parser.add_argument("--real-image", action="store_true", help="Enable real image generation.")
+    parser.add_argument("--profile-id", help="Use a named image generation profile.")
     parser.add_argument("--model-id", help="Override LUXFLOW_IMAGE_MODEL_ID for this run.")
     parser.add_argument("--width", type=int, help="Override generated image width.")
     parser.add_argument("--height", type=int, help="Override generated image height.")
@@ -29,6 +30,8 @@ def parse_args() -> argparse.Namespace:
 def apply_cli_overrides(args: argparse.Namespace) -> None:
     if args.real_image:
         config.settings.enable_real_image_generation = True
+    if args.profile_id is not None:
+        config.settings.image_profile_id = args.profile_id
     if args.model_id is not None:
         config.settings.image_model_id = args.model_id
     if args.width is not None:
@@ -76,7 +79,12 @@ def main() -> None:
     print(f"real_image_generation_enabled: {hero_generation.get('real_generation_enabled')}")
     print(f"used_real_generation: {hero_generation.get('used_real_generation')}")
     print(f"model_id: {hero_generation.get('model_id')}")
+    print(f"profile_id: {hero_generation.get('profile_id')}")
     print(f"device: {hero_generation.get('device')}")
+    print(f"width: {hero_generation.get('width')}")
+    print(f"height: {hero_generation.get('height')}")
+    print(f"steps: {hero_generation.get('steps')}")
+    print(f"guidance_scale: {hero_generation.get('guidance_scale')}")
     print(f"generation_attempted: {hero_generation.get('generation_attempted')}")
     print(f"fallback_used: {hero_generation.get('fallback_used')}")
     print(f"duration_seconds: {hero_generation.get('duration_seconds')}")

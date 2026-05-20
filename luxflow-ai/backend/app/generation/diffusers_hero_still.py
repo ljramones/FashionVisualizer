@@ -5,6 +5,9 @@ from pydantic import BaseModel, Field
 
 from backend.app.config import settings
 from backend.app.contracts import SceneRecipe
+from backend.app.generation.dimensions import resolve_generation_dimensions
+from backend.app.generation.image_profiles import ImageGenerationProfile, resolve_image_profile
+from backend.app.generation.prompt_profiles import PromptBundle, build_hero_still_prompt
 
 
 class GenerationResult(BaseModel):
@@ -13,6 +16,18 @@ class GenerationResult(BaseModel):
     backend: str = "diffusers"
     model_id: str
     device: str
+    profile_id: str | None = None
+    width: int | None = None
+    height: int | None = None
+    steps: int | None = None
+    guidance_scale: float | None = None
+    supports_negative_prompt: bool | None = None
+    positive_prompt_preview: str | None = None
+    negative_prompt_preview: str | None = None
+    aspect_ratio_requested: str | None = None
+    aspect_ratio_resolved: str | None = None
+    prompt_strategy: str = "product_empty_scene_for_later_composite"
+    prompt_profile_used: str | None = None
     dependency_status: dict[str, object] = Field(default_factory=dict)
     notes: list[str]
     error: str | None = None
@@ -76,17 +91,49 @@ def resolve_device() -> str:
     return "cpu"
 
 
-def _prompt(recipe: SceneRecipe) -> str:
-    return " ".join(
-        [
-            "Luxury catalog campaign still.",
-            f"Adult editorial {recipe.model.gender_presentation} model.",
-            f"Scene: {recipe.location.name}, {recipe.location.lighting} lighting.",
-            f"Action: {recipe.action.name}.",
-            "Handbag area intentionally empty for later product-locked composite.",
-            "No visible brand logos.",
-        ]
+def _preview(text: str, limit: int = 500) -> str:
+    return text if len(text) <= limit else f"{text[:limit].rstrip()}..."
+
+
+def _aspect_ratio(width: int, height: int) -> str:
+    return "1:1" if width == height else "9:16" if height > width else "custom"
+
+
+def _requested_dimensions(profile_id: str) -> tuple[int | None, int | None]:
+    if profile_id and settings.image_width == 1024 and settings.image_height == 1024:
+        return None, None
+    return settings.image_width, settings.image_height
+
+
+def _resolve_profile() -> ImageGenerationProfile:
+    return resolve_image_profile(settings.image_profile_id or None, settings.image_model_id)
+
+
+def _resolve_generation_parameters(recipe: SceneRecipe) -> tuple[
+    ImageGenerationProfile,
+    PromptBundle,
+    int,
+    int,
+    int,
+    float,
+]:
+    profile = _resolve_profile()
+    requested_width, requested_height = _requested_dimensions(profile.profile_id)
+    width, height = resolve_generation_dimensions(
+        recipe.aspect_ratio,
+        profile.profile_id,
+        recipe.mode.value,
+        requested_width=requested_width,
+        requested_height=requested_height,
     )
+    steps = settings.image_steps if settings.image_steps != 4 else profile.default_steps
+    guidance_scale = (
+        settings.image_guidance_scale
+        if settings.image_guidance_scale != 0.0
+        else profile.default_guidance_scale
+    )
+    prompt_bundle = build_hero_still_prompt(recipe, profile.profile_id)
+    return profile, prompt_bundle, width, height, steps, guidance_scale
 
 
 def _pipeline_load_kwargs(device: str) -> dict[str, Any]:
@@ -119,13 +166,22 @@ def _load_pipeline(model_id: str, device: str) -> Any:
         return DiffusionPipeline.from_pretrained(model_id, **kwargs)  # type: ignore[no-untyped-call]
 
 
-def _invoke_pipeline(pipe: Any, recipe: SceneRecipe, generator: Any) -> Any:
+def _invoke_pipeline(
+    pipe: Any,
+    prompt_bundle: PromptBundle,
+    generator: Any,
+    width: int,
+    height: int,
+    steps: int,
+    guidance_scale: float,
+    supports_negative_prompt: bool,
+) -> Any:
     kwargs: dict[str, Any] = {
-        "prompt": _prompt(recipe),
-        "width": settings.image_width,
-        "height": settings.image_height,
-        "num_inference_steps": settings.image_steps,
-        "guidance_scale": settings.image_guidance_scale,
+        "prompt": prompt_bundle.positive_prompt,
+        "width": width,
+        "height": height,
+        "num_inference_steps": steps,
+        "guidance_scale": guidance_scale,
         "generator": generator,
     }
 
@@ -133,8 +189,8 @@ def _invoke_pipeline(pipe: Any, recipe: SceneRecipe, generator: Any) -> Any:
         import inspect
 
         signature = inspect.signature(pipe.__call__)
-        if "negative_prompt" in signature.parameters:
-            kwargs["negative_prompt"] = recipe.negative_prompt
+        if supports_negative_prompt and "negative_prompt" in signature.parameters:
+            kwargs["negative_prompt"] = prompt_bundle.negative_prompt
     except (TypeError, ValueError):
         pass
 
@@ -145,9 +201,26 @@ def generate_hero_still_with_diffusers(
     recipe: SceneRecipe,
     output_path: Path,
 ) -> GenerationResult:
-    model_id = settings.image_model_id
+    profile, prompt_bundle, width, height, steps, guidance_scale = (
+        _resolve_generation_parameters(recipe)
+    )
+    model_id = profile.model_id if settings.image_profile_id else settings.image_model_id
     device = resolve_device()
     dependency_status = generation_dependency_status()
+    metadata: dict[str, Any] = {
+        "profile_id": profile.profile_id,
+        "width": width,
+        "height": height,
+        "steps": steps,
+        "guidance_scale": guidance_scale,
+        "supports_negative_prompt": profile.supports_negative_prompt,
+        "positive_prompt_preview": _preview(prompt_bundle.positive_prompt),
+        "negative_prompt_preview": _preview(prompt_bundle.negative_prompt),
+        "aspect_ratio_requested": recipe.aspect_ratio,
+        "aspect_ratio_resolved": _aspect_ratio(width, height),
+        "prompt_profile_used": profile.profile_id,
+        "prompt_strategy": "product_empty_scene_for_later_composite",
+    }
 
     try:
         import torch
@@ -157,6 +230,7 @@ def generate_hero_still_with_diffusers(
             output_path=None,
             model_id=model_id,
             device=device,
+            **metadata,
             dependency_status=dependency_status,
             notes=[
                 "Real image generation requested, but torch is not installed.",
@@ -173,6 +247,7 @@ def generate_hero_still_with_diffusers(
             output_path=None,
             model_id=model_id,
             device=device,
+            **metadata,
             dependency_status=dependency_status,
             notes=[
                 "Real image generation requested, but diffusers is not installed.",
@@ -198,7 +273,16 @@ def generate_hero_still_with_diffusers(
         pipe = pipe.to(device)
         generator_device = device if device in {"cuda", "cpu"} else "cpu"
         generator = torch.Generator(device=generator_device).manual_seed(recipe.seed)
-        result = _invoke_pipeline(pipe, recipe, generator)
+        result = _invoke_pipeline(
+            pipe,
+            prompt_bundle,
+            generator,
+            width,
+            height,
+            steps,
+            guidance_scale,
+            profile.supports_negative_prompt,
+        )
         image = result.images[0]
         output_path.parent.mkdir(parents=True, exist_ok=True)
         image.save(tmp_path)
@@ -211,8 +295,10 @@ def generate_hero_still_with_diffusers(
             output_path=None,
             model_id=model_id,
             device=device,
+            **metadata,
             dependency_status=dependency_status,
             notes=[
+                *prompt_bundle.notes,
                 "Diffusers generation failed or model access was unavailable.",
                 "Falling back to deterministic placeholder hero still.",
             ],
@@ -237,7 +323,8 @@ def generate_hero_still_with_diffusers(
         output_path=output_path,
         model_id=model_id,
         device=device,
+        **metadata,
         dependency_status=dependency_status,
-        notes=[*notes, "Real hero still generated with Diffusers."],
+        notes=[*prompt_bundle.notes, *notes, "Real hero still generated with Diffusers."],
         error=None,
     )

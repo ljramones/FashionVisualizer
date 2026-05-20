@@ -26,3 +26,13 @@ The default model remains configurable through `LUXFLOW_IMAGE_MODEL_ID`. The att
 `backend/app/generation/model_candidates.py` lists candidate Diffusers models with access and license notes. `scripts/probe_image_models.py` tests those candidates without adding another generation path. The current candidates are FLUX.1-schnell, SDXL Turbo, and SDXL base.
 
 Observed local result: SDXL Turbo and SDXL base generated real hero stills on Apple `mps` after forcing float32 loading for CPU/MPS smoke runs. FLUX.1-schnell remains configured as an aspirational model but requires gated Hugging Face access.
+
+## Image Profiles
+
+`backend/app/generation/image_profiles.py` defines model-specific generation defaults:
+
+- `sdxl_turbo_preview`: fast preview, `stabilityai/sdxl-turbo`, 2 steps, guidance `0.0`.
+- `sdxl_base_quality`: slower reference profile, SDXL base, 20 steps, guidance `6.0`.
+- `flux_schnell_quality_gated`: aspirational gated FLUX route, 4 steps, guidance `0.0`.
+
+`backend/app/generation/dimensions.py` maps `1:1` and `9:16` requests into profile-friendly dimensions. `backend/app/generation/prompt_profiles.py` builds concise product-empty scene prompts for the hero-still stage.
