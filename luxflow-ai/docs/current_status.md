@@ -27,6 +27,8 @@
 - hero-stage action prompts separated from final catalog action labels
 - empty-hand golden recipe for product-compositing prep
 - product-lock trace metadata with placement coordinates and freeze policy
+- deterministic transparent handbag demo assets
+- manual composite anchor presets and anchor tuning contact-sheet script
 
 ## Not Yet Implemented
 
@@ -43,9 +45,15 @@ The project currently demonstrates request-to-artifact workflow architecture. Re
 
 ## Product-Locked Composite v1
 
-The pipeline now renders `product_locked_composite.png` by opening the hero still, loading the product layer from `product.image_path`, and placing it with the action's `composite_anchor`. Product pixels are controlled by the overlay layer. No diffusion, segmentation, relighting, or background removal is applied to the product.
+The pipeline now renders `product_locked_composite.png` by opening the hero still, loading the product layer from `product.image_path`, and placing it with action-level anchor metadata. Product pixels are controlled by the overlay layer. No diffusion, segmentation, relighting, or background removal is applied to the product.
 
-The trace records `manual_anchor_alpha_overlay_v1`, source path, anchor ID, placement coordinates, product dimensions, scale, rotation, `freeze_core_pixels: true`, and `destructive_diffusion_allowed: false`.
+`scripts/generate_product_alpha_assets.py` creates deterministic transparent `product_alpha.png` files for the demo handbags. These assets replace the rectangular placeholder problem while keeping the layer non-generative and non-branded.
+
+`standing_right_hand_visible` now has multiple anchor presets with `right_hand_side_v2` as the default. `scripts/tune_composite_anchors.py` can render a contact sheet for manual comparison.
+
+The trace records `manual_anchor_alpha_overlay_v1`, source path, alpha status, alpha bounding box, anchor ID, default/override usage, x/y/scale ratios, rendered size, rotation, `freeze_core_pixels: true`, and `destructive_diffusion_allowed: false`.
+
+Still missing: shadows, edge feathering, occlusion, relighting, pose-based tracking, real product cutout ingestion, and video projection.
 
 ## Real Hero-Still Validation
 

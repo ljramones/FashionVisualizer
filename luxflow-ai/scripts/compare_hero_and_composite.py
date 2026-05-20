@@ -1,4 +1,5 @@
 import argparse
+import json
 from pathlib import Path
 
 from backend.app.config import project_root
@@ -8,6 +9,7 @@ from PIL import Image, ImageDraw
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Compare hero still and product composite.")
     parser.add_argument("output", help="Output directory path or request hash.")
+    parser.add_argument("--anchor-id", help="Optional anchor ID label for comparison output.")
     parser.add_argument(
         "--no-image",
         action="store_true",
@@ -51,12 +53,28 @@ def main() -> None:
     hero_path = output_dir / "hero_still.png"
     composite_path = output_dir / "product_locked_composite.png"
     thumbnail_path = output_dir / "thumbnail.png"
-    comparison_path = output_dir / "hero_vs_composite.png"
+    suffix = f"_{args.anchor_id}" if args.anchor_id else ""
+    comparison_path = output_dir / f"hero_vs_composite{suffix}.png"
+    trace_path = output_dir / "pipeline_trace.json"
 
     print(f"output_directory: {display_path(output_dir)}")
     print(f"hero_still: {display_path(hero_path)}")
     print(f"product_locked_composite: {display_path(composite_path)}")
     print(f"thumbnail: {display_path(thumbnail_path)}")
+    if trace_path.exists():
+        trace = json.loads(trace_path.read_text(encoding="utf-8"))
+        composite = trace.get("product_locked_composite", {})
+        print(f"product_has_alpha: {composite.get('product_has_alpha')}")
+        print(f"product_alpha_bbox: {composite.get('product_alpha_bbox')}")
+        print(f"anchor_id: {composite.get('anchor_id')}")
+        print(f"x_ratio: {composite.get('x_ratio')}")
+        print(f"y_ratio: {composite.get('y_ratio')}")
+        print(f"scale_ratio: {composite.get('scale_ratio')}")
+        print(f"freeze_core_pixels: {composite.get('freeze_core_pixels')}")
+        print(
+            "destructive_diffusion_allowed: "
+            f"{composite.get('destructive_diffusion_allowed')}"
+        )
 
     if not hero_path.exists() or not composite_path.exists():
         raise FileNotFoundError("Expected hero_still.png and product_locked_composite.png.")

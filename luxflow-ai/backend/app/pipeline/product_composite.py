@@ -13,11 +13,23 @@ class ProductCompositeResult(BaseModel):
     used_real_composite: bool = True
     output_path: Path
     product_source_path: str | None
+    product_has_alpha: bool
+    product_alpha_bbox: tuple[int, int, int, int] | None
+    product_fallback_used: bool
     anchor_id: str
+    default_anchor_used: bool
+    anchor_override_used: bool
+    anchor_missing: bool = False
+    x_ratio: float
+    y_ratio: float
     x: int
     y: int
+    pixel_x: int
+    pixel_y: int
     width: int
     height: int
+    rendered_width: int
+    rendered_height: int
     scale_ratio: float
     rotation_degrees: float
     layer_order: str
@@ -38,6 +50,47 @@ def _default_anchor() -> CompositeAnchor:
         layer_order="foreground",
         notes=["Default v1 manual anchor used because action metadata did not specify one."],
     )
+
+
+def _available_anchors(action: ActionRef) -> list[CompositeAnchor]:
+    anchors = list(action.composite_anchors)
+    if action.composite_anchor is not None and not any(
+        anchor.anchor_id == action.composite_anchor.anchor_id for anchor in anchors
+    ):
+        anchors.append(action.composite_anchor)
+    return anchors
+
+
+def resolve_composite_anchor(
+    action: ActionRef,
+    requested_anchor_id: str | None = None,
+) -> tuple[CompositeAnchor, bool, bool, bool, list[str]]:
+    anchors = _available_anchors(action)
+    notes: list[str] = []
+
+    if requested_anchor_id:
+        for anchor in anchors:
+            if anchor.anchor_id == requested_anchor_id:
+                return anchor, False, True, False, notes
+        notes.append(
+            f"Requested composite anchor '{requested_anchor_id}' was not found; "
+            "falling back to action default."
+        )
+
+    if action.default_composite_anchor_id:
+        for anchor in anchors:
+            if anchor.anchor_id == action.default_composite_anchor_id:
+                return anchor, True, False, bool(requested_anchor_id), notes
+        notes.append(
+            f"Default composite anchor '{action.default_composite_anchor_id}' was not found."
+        )
+
+    if anchors:
+        notes.append("Using first available action composite anchor.")
+        return anchors[0], False, False, bool(requested_anchor_id), notes
+
+    notes.append("No action composite anchors configured; using global fallback anchor.")
+    return _default_anchor(), True, False, bool(requested_anchor_id), notes
 
 
 def _resize_product(
@@ -79,6 +132,7 @@ def render_product_locked_composite(
     product: ProductRef,
     action: ActionRef,
     output_path: Path,
+    anchor_id: str | None = None,
 ) -> ProductCompositeResult:
     """Render a deterministic v1 product-locked composite.
 
@@ -88,7 +142,9 @@ def render_product_locked_composite(
 
     hero = Image.open(hero_still_path).convert("RGBA")
     product_layer = load_product_layer(product)
-    anchor = action.composite_anchor or _default_anchor()
+    anchor, default_anchor_used, anchor_override_used, anchor_missing, anchor_notes = (
+        resolve_composite_anchor(action, anchor_id)
+    )
 
     layer = _resize_product(product_layer.image, hero.size, anchor.scale_ratio)
     if anchor.rotation_degrees:
@@ -108,16 +164,29 @@ def render_product_locked_composite(
         success=True,
         output_path=output_path,
         product_source_path=_display_path(product_layer.source_path),
+        product_has_alpha=product_layer.has_alpha,
+        product_alpha_bbox=product_layer.alpha_bbox,
+        product_fallback_used=product_layer.fallback_used,
         anchor_id=anchor.anchor_id,
+        default_anchor_used=default_anchor_used,
+        anchor_override_used=anchor_override_used,
+        anchor_missing=anchor_missing,
+        x_ratio=anchor.x_ratio,
+        y_ratio=anchor.y_ratio,
         x=x,
         y=y,
+        pixel_x=x,
+        pixel_y=y,
         width=layer.width,
         height=layer.height,
+        rendered_width=layer.width,
+        rendered_height=layer.height,
         scale_ratio=anchor.scale_ratio,
         rotation_degrees=anchor.rotation_degrees,
         layer_order=anchor.layer_order,
         notes=[
             *product_layer.notes,
+            *anchor_notes,
             *anchor.notes,
             "Product layer composited by manual anchor alpha overlay.",
             "No diffusion or relighting was applied to the product layer.",

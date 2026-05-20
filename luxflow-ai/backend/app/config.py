@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     image_height: int = 1024
     image_steps: int = 4
     image_guidance_scale: float = 0.0
+    composite_anchor_id: str = ""
 
     model_config = SettingsConfigDict(env_prefix="LUXFLOW_", env_file=".env", extra="ignore")
 

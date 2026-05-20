@@ -136,17 +136,36 @@ export default function PipelineTraceViewer({ entry }: PipelineTraceViewerProps)
             <span>method: {trace.product_locked_composite.composite_method}</span>
             <span>anchor: {trace.product_locked_composite.anchor_id}</span>
             <span>
+              default anchor used:{" "}
+              {String(trace.product_locked_composite.default_anchor_used)}
+            </span>
+            <span>
+              override anchor used:{" "}
+              {String(trace.product_locked_composite.anchor_override_used)}
+            </span>
+            <span>
               product source: {trace.product_locked_composite.product_source_path ?? "fallback layer"}
+            </span>
+            <span>
+              product has alpha: {String(trace.product_locked_composite.product_has_alpha)}
+            </span>
+            <span>
+              alpha bbox:{" "}
+              {trace.product_locked_composite.product_alpha_bbox?.join(", ") ?? "n/a"}
+            </span>
+            <span>
+              ratios: x {trace.product_locked_composite.x_ratio}, y{" "}
+              {trace.product_locked_composite.y_ratio}, scale{" "}
+              {trace.product_locked_composite.scale_ratio}
             </span>
             <span>
               placement: x {trace.product_locked_composite.x}, y{" "}
               {trace.product_locked_composite.y}
             </span>
             <span>
-              size: {trace.product_locked_composite.width} x{" "}
-              {trace.product_locked_composite.height}
+              rendered size: {trace.product_locked_composite.rendered_width} x{" "}
+              {trace.product_locked_composite.rendered_height}
             </span>
-            <span>scale: {trace.product_locked_composite.scale_ratio}</span>
             <span>rotation: {trace.product_locked_composite.rotation_degrees}</span>
             <span>
               product locked: {String(trace.product_locked_composite.product_locked)}

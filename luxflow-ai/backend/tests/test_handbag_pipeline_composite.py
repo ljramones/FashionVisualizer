@@ -35,7 +35,11 @@ def test_handbag_pipeline_writes_real_product_composite_trace(tmp_path, monkeypa
     assert trace["product_locked_composite"]["composite_method"] == (
         "manual_anchor_alpha_overlay_v1"
     )
-    assert trace["product_locked_composite"]["anchor_id"] == "right_hand_side_v1"
+    assert trace["product_locked_composite"]["anchor_id"] == "right_hand_side_v2"
+    assert trace["product_locked_composite"]["product_has_alpha"] is True
+    assert trace["product_locked_composite"]["product_alpha_bbox"] is not None
+    assert trace["product_locked_composite"]["default_anchor_used"] is True
+    assert trace["product_locked_composite"]["anchor_override_used"] is False
     assert trace["product_locked_composite"]["freeze_core_pixels"] is True
     assert trace["product_locked_composite"]["destructive_diffusion_allowed"] is False
     assert any(

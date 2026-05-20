@@ -156,7 +156,29 @@ Create a side-by-side review image:
 python scripts/compare_hero_and_composite.py assets/outputs/<request_hash>
 ```
 
-V1 uses manual anchor metadata. Adjust `composite_anchor` in action metadata when placement is poor. Do not move to video until the static composite is visually acceptable.
+V1 uses transparent product demo assets and manual anchor metadata. Refresh the transparent assets with:
+
+```bash
+python scripts/generate_product_alpha_assets.py
+```
+
+Override the anchor for a demo:
+
+```bash
+python scripts/run_golden_demo.py \
+  --recipe-file assets/demo/golden_empty_hand_recipe.json \
+  --anchor-id right_hand_side_v2
+```
+
+Generate an anchor review contact sheet:
+
+```bash
+python scripts/tune_composite_anchors.py \
+  --output-dir assets/outputs/<request_hash> \
+  --anchors right_hand_side_v1 right_hand_side_v2 right_hip_mid_v1 right_hip_lower_v1
+```
+
+V1 does not use SAM, rembg, pose estimation, shadows, edge blending, or relighting. Adjust action anchor presets when placement is poor. Do not move to video until the static composite is visually acceptable.
 
 ## Aspect Ratio Handling
 

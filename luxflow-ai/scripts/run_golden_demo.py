@@ -25,6 +25,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--height", type=int, help="Override generated image height.")
     parser.add_argument("--steps", type=int, help="Override image inference steps.")
     parser.add_argument("--guidance-scale", type=float, help="Override image guidance scale.")
+    parser.add_argument("--anchor-id", help="Override the product composite anchor.")
     parser.add_argument(
         "--device",
         choices=["auto", "mps", "cpu", "cuda"],
@@ -52,6 +53,8 @@ def apply_cli_overrides(args: argparse.Namespace) -> None:
         config.settings.image_guidance_scale = args.guidance_scale
     if args.device is not None:
         config.settings.image_device = args.device
+    if args.anchor_id is not None:
+        config.settings.composite_anchor_id = args.anchor_id
 
 
 def _load_recipe(recipe_file: str) -> GenerationRequest:

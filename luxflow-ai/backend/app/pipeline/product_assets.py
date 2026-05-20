@@ -14,6 +14,9 @@ class ProductLayer:
     width: int
     height: int
     source_path: Path | None
+    has_alpha: bool
+    alpha_bbox: tuple[int, int, int, int] | None
+    fallback_used: bool
     notes: list[str]
 
 
@@ -34,6 +37,9 @@ def _fallback_product_layer(product: ProductRef) -> ProductLayer:
         width=image.width,
         height=image.height,
         source_path=None,
+        has_alpha=True,
+        alpha_bbox=image.getchannel("A").getbbox(),
+        fallback_used=True,
         notes=[
             "Product image was missing; rendered deterministic placeholder product layer.",
             "Placeholder layer is still treated as frozen product pixels.",
@@ -60,8 +66,10 @@ def load_product_layer(product: ProductRef) -> ProductLayer:
 
     image = Image.open(source_path).convert("RGBA")
     alpha = image.getchannel("A")
+    alpha_bbox = alpha.getbbox()
+    has_alpha = alpha.getextrema() != (255, 255) and alpha_bbox is not None
     notes = [f"Loaded product layer from {product.image_path}."]
-    if alpha.getextrema() == (255, 255):
+    if not has_alpha:
         notes.append(
             "Source image has no alpha; using the full rectangular image as the layer."
         )
@@ -74,5 +82,8 @@ def load_product_layer(product: ProductRef) -> ProductLayer:
         width=image.width,
         height=image.height,
         source_path=source_path,
+        has_alpha=has_alpha,
+        alpha_bbox=alpha_bbox,
+        fallback_used=False,
         notes=notes,
     )

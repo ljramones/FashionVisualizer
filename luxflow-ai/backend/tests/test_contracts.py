@@ -1,4 +1,9 @@
-from backend.app.contracts import ActionRef, GenerationMode, GenerationRequest
+from backend.app.contracts import (
+    ActionRef,
+    CompositeAnchor,
+    GenerationMode,
+    GenerationRequest,
+)
 from backend.app.recipes.scene_recipe_compiler import request_hash
 
 
@@ -46,8 +51,15 @@ def test_action_ref_accepts_hero_stage_fields() -> None:
         hero_pose_intent="visible relaxed right hand",
         final_catalog_action_label="standing with handbag",
         forbidden_generated_objects=["handbag", "bag", "purse"],
+        default_composite_anchor_id="anchor_b",
+        composite_anchors=[
+            CompositeAnchor(anchor_id="anchor_a", x_ratio=0.5, y_ratio=0.5, scale_ratio=0.2),
+            CompositeAnchor(anchor_id="anchor_b", x_ratio=0.6, y_ratio=0.5, scale_ratio=0.18),
+        ],
     )
 
     assert action.hero_action_prompt_fragment is not None
     assert action.final_catalog_action_label == "standing with handbag"
     assert "purse" in action.forbidden_generated_objects
+    assert action.default_composite_anchor_id == "anchor_b"
+    assert len(action.composite_anchors) == 2

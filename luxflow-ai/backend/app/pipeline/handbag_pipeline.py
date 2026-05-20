@@ -192,6 +192,7 @@ def run_handbag_pipeline(recipe: SceneRecipe, output_root: Path | None = None) -
         recipe.product,
         recipe.action,
         store.path_for("product_locked_composite.png"),
+        anchor_id=settings.composite_anchor_id or None,
     )
     composite_path = composite_result.output_path
     thumbnail_path = render_thumbnail(composite_path, store.path_for("thumbnail.png"))

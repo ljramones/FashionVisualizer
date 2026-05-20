@@ -68,15 +68,35 @@ Latest tuning result: `standing_right_hand_visible` produces the best no-accesso
 The composite stage now uses `manual_anchor_alpha_overlay_v1`:
 
 1. Open `hero_still.png`.
-2. Load the product image from `ProductRef.image_path`.
-3. Resolve the action's `composite_anchor`.
+2. Load the transparent product image from `ProductRef.image_path`.
+3. Resolve the requested, default, or fallback action anchor.
 4. Resize and rotate the product layer deterministically.
 5. Paste the product with alpha onto the hero still.
 6. Write `product_locked_composite.png`.
 
 If a product image is missing, the compositor creates a labeled deterministic fallback layer and records the fallback in trace notes. V1 does not perform pose estimation, segmentation, background removal, shadows, edge blending, relighting, or diffusion over product pixels.
 
-The trace records product source path, anchor ID, x/y placement, layer size, scale, rotation, freeze policy, and `destructive_diffusion_allowed: false`.
+The trace records product source path, alpha status, alpha bounding box, anchor ID, whether the default or an override anchor was used, x/y ratios, pixel placement, layer size, scale, rotation, freeze policy, and `destructive_diffusion_allowed: false`.
+
+## Transparent Product Assets
+
+`scripts/generate_product_alpha_assets.py` creates deterministic transparent PNG demo assets for the handbag products. These files are intentionally simple: silhouette, handle, color, and minor hardware detail with no logo or opaque rectangle. Real product photos can be used later if they already include an alpha channel or a prepared mask.
+
+The current project does not use SAM, rembg, or any other background-removal model. Rectangular/no-alpha assets are still accepted, but the loader records that they do not provide useful transparency.
+
+## Manual Anchor Tuning
+
+Manual anchors are stored in action metadata so placement remains data-driven. `standing_right_hand_visible` includes several right-hand/right-hip presets, and `default_composite_anchor_id` selects the current default.
+
+Use the tuning helper to compare anchors against the same hero still:
+
+```bash
+python scripts/tune_composite_anchors.py \
+  --output-dir assets/outputs/<request_hash> \
+  --anchors right_hand_side_v1 right_hand_side_v2 right_hip_mid_v1 right_hip_lower_v1
+```
+
+The script writes ignored composites/contact sheets under `assets/outputs/composite_anchor_tuning/` and updates `docs/composite_anchor_tuning_results.md` for manual review.
 
 ## Why Not Video Yet?
 

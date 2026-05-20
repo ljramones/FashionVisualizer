@@ -73,6 +73,8 @@ class ActionRef(BaseModel):
     final_catalog_action_label: str | None = None
     forbidden_generated_objects: list[str] = Field(default_factory=list)
     composite_anchor: CompositeAnchor | None = None
+    composite_anchors: list[CompositeAnchor] = Field(default_factory=list)
+    default_composite_anchor_id: str | None = None
 
 
 class GenerationRequest(BaseModel):

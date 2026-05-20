@@ -22,16 +22,53 @@
     "strap",
     "branded accessory"
   ],
-  "composite_anchor": {
-    "anchor_id": "right_hand_side_v1",
-    "x_ratio": 0.62,
-    "y_ratio": 0.62,
-    "scale_ratio": 0.22,
-    "rotation_degrees": 0.0,
-    "layer_order": "foreground",
-    "notes": [
-      "Manual anchor for empty-hand standing pose.",
-      "Places handbag near right hand/right hip area."
-    ]
-  }
+  "default_composite_anchor_id": "right_hand_side_v2",
+  "composite_anchors": [
+    {
+      "anchor_id": "right_hand_side_v1",
+      "x_ratio": 0.62,
+      "y_ratio": 0.62,
+      "scale_ratio": 0.22,
+      "rotation_degrees": 0.0,
+      "layer_order": "foreground",
+      "notes": [
+        "Manual anchor for empty-hand standing pose.",
+        "Places handbag near right hand/right hip area."
+      ]
+    },
+    {
+      "anchor_id": "right_hand_side_v2",
+      "x_ratio": 0.62,
+      "y_ratio": 0.55,
+      "scale_ratio": 0.2,
+      "rotation_degrees": 0.0,
+      "layer_order": "foreground",
+      "notes": [
+        "Raised and slightly reduced anchor for empty-hand standing pose.",
+        "Preferred default for transparent product alpha asset."
+      ]
+    },
+    {
+      "anchor_id": "right_hip_mid_v1",
+      "x_ratio": 0.58,
+      "y_ratio": 0.56,
+      "scale_ratio": 0.18,
+      "rotation_degrees": 0.0,
+      "layer_order": "foreground",
+      "notes": [
+        "Places a smaller handbag closer to the right hip midpoint."
+      ]
+    },
+    {
+      "anchor_id": "right_hip_lower_v1",
+      "x_ratio": 0.6,
+      "y_ratio": 0.59,
+      "scale_ratio": 0.19,
+      "rotation_degrees": 0.0,
+      "layer_order": "foreground",
+      "notes": [
+        "Lower hip placement for comparison against v2."
+      ]
+    }
+  ]
 }
