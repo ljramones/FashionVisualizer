@@ -21,5 +21,17 @@
     "backpack",
     "strap",
     "branded accessory"
-  ]
+  ],
+  "composite_anchor": {
+    "anchor_id": "slow_walk_right_hand_side_v1",
+    "x_ratio": 0.64,
+    "y_ratio": 0.66,
+    "scale_ratio": 0.22,
+    "rotation_degrees": 0.0,
+    "layer_order": "foreground",
+    "notes": [
+      "Manual anchor for slow-walk comparison pose.",
+      "This action still needs visual review because generated accessories may leak."
+    ]
+  }
 }

@@ -19,6 +19,17 @@ GenderPresentation = Literal["male", "female", "neutral"]
 ModelSource = Literal["synthetic", "licensed_reference", "anonymous"]
 LoopPolicy = Literal["ping_pong", "none"]
 ProductAnchorTarget = Literal["right_hand", "left_hand", "shoulder", "right_hip", "left_hip"]
+CompositeLayerOrder = Literal["foreground", "midground"]
+
+
+class CompositeAnchor(BaseModel):
+    anchor_id: str
+    x_ratio: float = Field(ge=0.0, le=1.0)
+    y_ratio: float = Field(ge=0.0, le=1.0)
+    scale_ratio: float = Field(gt=0.0, le=1.0)
+    rotation_degrees: float = 0.0
+    layer_order: CompositeLayerOrder = "foreground"
+    notes: list[str] = Field(default_factory=list)
 
 
 class ProductRef(BaseModel):
@@ -61,6 +72,7 @@ class ActionRef(BaseModel):
     hero_pose_intent: str | None = None
     final_catalog_action_label: str | None = None
     forbidden_generated_objects: list[str] = Field(default_factory=list)
+    composite_anchor: CompositeAnchor | None = None
 
 
 class GenerationRequest(BaseModel):

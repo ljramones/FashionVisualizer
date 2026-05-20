@@ -21,5 +21,17 @@
     "backpack",
     "strap",
     "branded accessory"
-  ]
+  ],
+  "composite_anchor": {
+    "anchor_id": "right_hand_side_v1",
+    "x_ratio": 0.62,
+    "y_ratio": 0.62,
+    "scale_ratio": 0.22,
+    "rotation_degrees": 0.0,
+    "layer_order": "foreground",
+    "notes": [
+      "Manual anchor for empty-hand standing pose.",
+      "Places handbag near right hand/right hip area."
+    ]
+  }
 }

@@ -84,6 +84,7 @@ def main() -> None:
     output_dir = project_root() / "assets/outputs" / entry.recipe_hash
     trace = json.loads((output_dir / "pipeline_trace.json").read_text(encoding="utf-8"))
     hero_generation = trace.get("hero_still_generation", {})
+    product_composite = trace.get("product_locked_composite", {})
 
     print("LuxFlow AI golden demo complete")
     print(f"recipe_file: {args.recipe_file}")
@@ -91,6 +92,13 @@ def main() -> None:
     print(f"output_directory: {output_dir.relative_to(project_root()).as_posix()}")
     print(f"hero_still: {_artifact_path(entry, 'hero_still')}")
     print(f"product_composite: {_artifact_path(entry, 'product_locked_composite')}")
+    print(f"product_composite_method: {product_composite.get('composite_method')}")
+    print(f"product_composite_anchor_id: {product_composite.get('anchor_id')}")
+    print(f"freeze_core_pixels: {product_composite.get('freeze_core_pixels')}")
+    print(
+        "destructive_diffusion_allowed: "
+        f"{product_composite.get('destructive_diffusion_allowed')}"
+    )
     print(f"thumbnail: {_artifact_path(entry, 'thumbnail')}")
     print(f"catalog_entry: {_artifact_path(entry, 'catalog_entry')}")
     print(f"pipeline_trace: {_artifact_path(entry, 'pipeline_trace')}")

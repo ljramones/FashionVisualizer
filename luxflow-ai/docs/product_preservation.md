@@ -4,6 +4,15 @@ The handbag should not be hallucinated by diffusion. The source product is the c
 
 Product-locked compositing means the generative model should create context and motion around the product while the product itself is protected by masks and overlays. The freeze mask concept identifies pixels or regions that should survive destructive diffusion.
 
+Current implementation:
+
+- Loads the product image from `ProductRef.image_path`.
+- Places it onto `hero_still.png` with a manual action-level `composite_anchor`.
+- Writes `product_locked_composite.png`.
+- Records placement and freeze metadata in `pipeline_trace.json`.
+- Allows deterministic resize/rotation for placement only.
+- Does not run diffusion, relighting, segmentation, background removal, or image-to-image edits over the product layer.
+
 Future implementation should:
 
 - Generate or ingest a product mask.
@@ -12,11 +21,14 @@ Future implementation should:
 - Compare generated output against the source image for similarity.
 - Project or track the locked product region through video frames.
 
-The current implementation writes a product-locked composite placeholder with a marked handbag layer and a freeze policy:
+The current freeze policy:
 
 - `freeze_core_pixels: true`
-- `allow_edge_feathering: true`
-- `allow_contact_shadow: true`
+- `preserve_alpha_layer: true`
+- `allow_resize: true`
+- `allow_rotation: true`
+- `allow_edge_feathering: false`
+- `allow_contact_shadow: false`
 - `destructive_diffusion_allowed: false`
 
-This is not image analysis and does not prove product similarity. It establishes the metadata and artifact lifecycle needed before destructive generation stages are introduced.
+This is not image analysis and does not prove product similarity. It proves the architectural rule: the product is a controlled layer, not an object invented by the image model.

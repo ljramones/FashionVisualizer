@@ -56,6 +56,15 @@ export interface ActionRef {
   hero_pose_intent?: string | null;
   final_catalog_action_label?: string | null;
   forbidden_generated_objects?: string[];
+  composite_anchor?: {
+    anchor_id: string;
+    x_ratio: number;
+    y_ratio: number;
+    scale_ratio: number;
+    rotation_degrees: number;
+    layer_order: "foreground" | "midground";
+    notes: string[];
+  } | null;
 }
 
 export interface GenerationRequest {
@@ -80,6 +89,30 @@ export interface PipelineTrace {
     notes: string[];
   }[];
   product_preservation: {
+    freeze_core_pixels: boolean;
+    preserve_alpha_layer?: boolean;
+    allow_resize?: boolean;
+    allow_rotation?: boolean;
+    allow_edge_feathering?: boolean;
+    allow_contact_shadow?: boolean;
+    destructive_diffusion_allowed: boolean;
+    notes: string[];
+  };
+  product_locked_composite: {
+    success: boolean;
+    used_real_composite: boolean;
+    output_path: string;
+    product_source_path?: string | null;
+    anchor_id: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    scale_ratio: number;
+    rotation_degrees: number;
+    layer_order: string;
+    composite_method: string;
+    product_locked: boolean;
     freeze_core_pixels: boolean;
     destructive_diffusion_allowed: boolean;
     notes: string[];

@@ -18,11 +18,12 @@ Current status:
 - `POST /generate` writes artifacts under `assets/outputs/{request_hash}/`.
 - `POST /demo/run-golden` runs the canonical golden recipe.
 - `hero_still.png` is generated with Pillow by default, or with optional Diffusers when enabled and available.
-- `product_locked_composite.png` and `thumbnail.png` are generated with Pillow.
+- `product_locked_composite.png` is a Pillow manual-anchor alpha overlay.
+- `thumbnail.png` is generated from the product-locked composite.
 - `final_video_placeholder.json` is written instead of a real video.
 - `catalog_entry.json` and `pipeline_trace.json` record the artifact lifecycle.
 - `pipeline_trace.json` records hero-still generation timing, dependency status, selected device, fallback status, and error summary.
-- Product lock functions return policy metadata only.
+- Product lock functions return explicit freeze policy metadata.
 - Evaluation uses honest placeholder scores; prompt adherence is not measured.
 
 No ComfyUI workflow or video route is executed. Optional Diffusers hero-still execution is disabled by default and falls back cleanly to the placeholder renderer.
@@ -61,6 +62,25 @@ The older `walking_with_bag` action remains available for comparison but now als
 Current tuning finding: the first contact sheet technically succeeded but generated unwanted bag-like accessories. The current mitigation is stronger hero-action decoupling plus the `strict_empty_hand_no_accessory_v1` variant.
 
 Latest tuning result: `standing_right_hand_visible` produces the best no-accessory candidates. `slow_walk_right_hand_visible` still frequently generates bag-like objects and should remain a comparison route until the action is simplified or a stronger prompt/profile is selected.
+
+## Product-Locked Composite v1
+
+The composite stage now uses `manual_anchor_alpha_overlay_v1`:
+
+1. Open `hero_still.png`.
+2. Load the product image from `ProductRef.image_path`.
+3. Resolve the action's `composite_anchor`.
+4. Resize and rotate the product layer deterministically.
+5. Paste the product with alpha onto the hero still.
+6. Write `product_locked_composite.png`.
+
+If a product image is missing, the compositor creates a labeled deterministic fallback layer and records the fallback in trace notes. V1 does not perform pose estimation, segmentation, background removal, shadows, edge blending, relighting, or diffusion over product pixels.
+
+The trace records product source path, anchor ID, x/y placement, layer size, scale, rotation, freeze policy, and `destructive_diffusion_allowed: false`.
+
+## Why Not Video Yet?
+
+Video remains deferred because product placement needs to work on a still first. Once the manual anchor and product layer are visually acceptable, the project can evaluate anchor presets, simple compositing polish, and only then product projection or image-to-video routes.
 
 ## Aspect Ratio Handling
 

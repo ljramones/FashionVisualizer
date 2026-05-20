@@ -14,8 +14,11 @@ from backend.app.generation.diffusers_hero_still import (
 from backend.app.pipeline.artifact_store import ArtifactStore
 from backend.app.pipeline.placeholder_render import (
     render_hero_still_placeholder,
-    render_product_locked_composite_placeholder,
     render_thumbnail,
+)
+from backend.app.pipeline.product_composite import (
+    ProductCompositeResult,
+    render_product_locked_composite,
 )
 from backend.app.pipeline.product_lock import build_product_freeze_policy
 from backend.app.publisher.catalog_publisher import publish_catalog_entry
@@ -37,6 +40,15 @@ def _summarize_error(error: str | None) -> str | None:
         return None
     first_line = error.splitlines()[0].strip()
     return first_line[:300]
+
+
+def _composite_trace_metadata(
+    store: ArtifactStore,
+    composite_result: ProductCompositeResult,
+) -> dict[str, object]:
+    payload: dict[str, object] = composite_result.model_dump(mode="json")
+    payload["output_path"] = store.relative_path(composite_result.output_path)
+    return payload
 
 
 def _render_hero_still(recipe: SceneRecipe, hero_path: Path) -> tuple[Path, dict[str, object], str]:
@@ -175,10 +187,13 @@ def run_handbag_pipeline(recipe: SceneRecipe, output_root: Path | None = None) -
         recipe,
         store.path_for("hero_still.png"),
     )
-    composite_path = render_product_locked_composite_placeholder(
-        recipe,
+    composite_result = render_product_locked_composite(
+        hero_path,
+        recipe.product,
+        recipe.action,
         store.path_for("product_locked_composite.png"),
     )
+    composite_path = composite_result.output_path
     thumbnail_path = render_thumbnail(composite_path, store.path_for("thumbnail.png"))
     video_placeholder_path = store.write_json(
         "final_video_placeholder.json",
@@ -233,6 +248,7 @@ def run_handbag_pipeline(recipe: SceneRecipe, output_root: Path | None = None) -
         "mode": recipe.mode.value,
         "ml_execution": bool(hero_generation_metadata["used_real_generation"]),
         "hero_still_generation": hero_generation_metadata,
+        "product_locked_composite": _composite_trace_metadata(store, composite_result),
         "product_preservation": freeze_policy,
         "stages": [
             {
@@ -248,10 +264,18 @@ def run_handbag_pipeline(recipe: SceneRecipe, output_root: Path | None = None) -
                 "notes": hero_generation_metadata["notes"],
             },
             {
-                "stage_id": "product_locked_composite_placeholder_rendered",
-                "label": "Product-locked composite placeholder rendered",
+                "stage_id": "product_layer_loaded",
+                "label": "Product layer loaded",
                 "status": "completed",
-                "notes": ["Product lock layer is represented visually and in metadata."],
+                "notes": [
+                    f"Product source: {composite_result.product_source_path or 'fallback layer'}."
+                ],
+            },
+            {
+                "stage_id": "product_locked_composite_rendered",
+                "label": "Product-locked composite rendered",
+                "status": "completed",
+                "notes": composite_result.notes,
             },
             {
                 "stage_id": "thumbnail_rendered",

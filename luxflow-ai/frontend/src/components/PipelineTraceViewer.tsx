@@ -132,9 +132,50 @@ export default function PipelineTraceViewer({ entry }: PipelineTraceViewerProps)
             ) : null}
           </div>
           <div className="preservation-box">
+            <strong>Product-locked composite</strong>
+            <span>method: {trace.product_locked_composite.composite_method}</span>
+            <span>anchor: {trace.product_locked_composite.anchor_id}</span>
+            <span>
+              product source: {trace.product_locked_composite.product_source_path ?? "fallback layer"}
+            </span>
+            <span>
+              placement: x {trace.product_locked_composite.x}, y{" "}
+              {trace.product_locked_composite.y}
+            </span>
+            <span>
+              size: {trace.product_locked_composite.width} x{" "}
+              {trace.product_locked_composite.height}
+            </span>
+            <span>scale: {trace.product_locked_composite.scale_ratio}</span>
+            <span>rotation: {trace.product_locked_composite.rotation_degrees}</span>
+            <span>
+              product locked: {String(trace.product_locked_composite.product_locked)}
+            </span>
+            <span>
+              freeze core pixels:{" "}
+              {String(trace.product_locked_composite.freeze_core_pixels)}
+            </span>
+            <span>
+              destructive diffusion allowed:{" "}
+              {String(trace.product_locked_composite.destructive_diffusion_allowed)}
+            </span>
+            <small>{trace.product_locked_composite.notes.join(" ")}</small>
+          </div>
+          <div className="preservation-box">
             <strong>Product preservation</strong>
             <span>
               freeze core pixels: {String(trace.product_preservation.freeze_core_pixels)}
+            </span>
+            <span>
+              preserve alpha layer:{" "}
+              {String(trace.product_preservation.preserve_alpha_layer ?? false)}
+            </span>
+            <span>
+              resize allowed: {String(trace.product_preservation.allow_resize ?? false)}
+            </span>
+            <span>
+              rotation allowed:{" "}
+              {String(trace.product_preservation.allow_rotation ?? false)}
             </span>
             <span>
               destructive diffusion allowed:{" "}

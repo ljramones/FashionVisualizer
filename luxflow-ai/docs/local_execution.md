@@ -16,6 +16,7 @@ Current local artifact flow:
 - Set `LUXFLOW_OUTPUT_ROOT` to redirect outputs for tests or experiments.
 - Generated PNGs are served from `/static/assets/outputs/...` in local development.
 - Video output is represented by `final_video_placeholder.json`, not a playable video.
+- `product_locked_composite.png` is a manual-anchor alpha overlay of the product layer.
 
 Run backend:
 
@@ -127,6 +128,35 @@ python scripts/tune_hero_prompts.py \
 ```
 
 The contact sheet and generated images are written under ignored `assets/outputs/prompt_tuning/`. Use `docs/hero_still_review_checklist.md` to review the tracked `docs/prompt_tuning_results.md` table.
+
+## Product-Locked Composite v1
+
+Run an empty-hand composite:
+
+```bash
+python scripts/run_golden_demo.py --recipe-file assets/demo/golden_empty_hand_recipe.json
+```
+
+With real SDXL Turbo hero still generation:
+
+```bash
+python scripts/run_golden_demo.py \
+  --recipe-file assets/demo/golden_empty_hand_recipe.json \
+  --real-image \
+  --profile-id sdxl_turbo_preview \
+  --prompt-variant strict_empty_hand_no_accessory_v1 \
+  --width 512 \
+  --height 768 \
+  --steps 2
+```
+
+Create a side-by-side review image:
+
+```bash
+python scripts/compare_hero_and_composite.py assets/outputs/<request_hash>
+```
+
+V1 uses manual anchor metadata. Adjust `composite_anchor` in action metadata when placement is poor. Do not move to video until the static composite is visually acceptable.
 
 ## Aspect Ratio Handling
 

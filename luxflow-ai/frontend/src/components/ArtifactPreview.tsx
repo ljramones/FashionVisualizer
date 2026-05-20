@@ -17,11 +17,11 @@ export default function ArtifactPreview({ entry }: ArtifactPreviewProps) {
 
   return (
     <section className="artifact-preview">
-      <h3>Generated Placeholder Artifacts</h3>
+      <h3>Generated Artifacts</h3>
       <div className="artifact-grid">
-        <ArtifactImage title="Hero Still Placeholder" url={heroUrl} path={artifacts.hero_still?.path} />
+        <ArtifactImage title="Hero Still" url={heroUrl} path={artifacts.hero_still?.path} />
         <ArtifactImage
-          title="Product-Locked Composite Placeholder"
+          title="Product-Locked Composite"
           url={compositeUrl}
           path={artifacts.product_locked_composite?.path}
         />

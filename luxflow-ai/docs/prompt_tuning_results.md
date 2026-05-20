@@ -35,3 +35,7 @@ Current tuning focus: separate final catalog action from hero-stage action so th
 - Best current review candidates are `standing_right_hand_visible` with `studio_safe_pose_v1` seed 42 and `minimal_accessory_free_v1` seed 43. Both need closer hand/placement inspection before product-lock work.
 - Some standing outputs include small watermark-like text artifacts. The negative prompt already includes text and watermark terms, but this remains a review item.
 - The prompt was shortened after earlier truncation warnings; SDXL Turbo may still trim the last token or two, but the empty-hand instructions now appear early in the prompt.
+
+## Product Composite Follow-Up
+
+Product-locked composite v1 now uses the standing empty-hand action as the preferred compositing path. The product layer is pasted through `manual_anchor_alpha_overlay_v1`; no diffusion modifies the product. Use `scripts/compare_hero_and_composite.py` against the generated output directory to review whether the current `right_hand_side_v1` anchor needs adjustment.

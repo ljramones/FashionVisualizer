@@ -10,12 +10,17 @@ def build_product_freeze_policy(
         "product_id": product.id,
         "mask_path": product.mask_path,
         "freeze_core_pixels": True,
-        "allow_edge_feathering": True,
-        "allow_contact_shadow": True,
+        "preserve_alpha_layer": True,
+        "allow_resize": True,
+        "allow_rotation": True,
+        "allow_edge_feathering": False,
+        "allow_contact_shadow": False,
         "destructive_diffusion_allowed": False,
         "notes": [
+            "V1 composite uses direct alpha overlay.",
+            "No diffusion or relighting is applied to the product layer.",
+            "Future versions may add shadows/edge blending without modifying product core pixels.",
             "Protect source product silhouette, logo area, structure, straps, and hardware.",
-            "Placeholder composite does not run diffusion over product pixels.",
         ],
     }
 

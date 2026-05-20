@@ -23,5 +23,17 @@
     "strap",
     "chain strap",
     "branded accessory"
-  ]
+  ],
+  "composite_anchor": {
+    "anchor_id": "walking_right_hand_side_v1",
+    "x_ratio": 0.64,
+    "y_ratio": 0.64,
+    "scale_ratio": 0.22,
+    "rotation_degrees": 0.0,
+    "layer_order": "foreground",
+    "notes": [
+      "Manual anchor for original walking comparison action.",
+      "Prefer standing_right_hand_visible for real product compositing."
+    ]
+  }
 }

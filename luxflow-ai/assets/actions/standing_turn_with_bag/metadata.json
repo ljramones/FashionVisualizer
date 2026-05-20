@@ -23,5 +23,17 @@
     "strap",
     "chain strap",
     "branded accessory"
-  ]
+  ],
+  "composite_anchor": {
+    "anchor_id": "standing_turn_right_hand_side_v1",
+    "x_ratio": 0.62,
+    "y_ratio": 0.62,
+    "scale_ratio": 0.22,
+    "rotation_degrees": 0.0,
+    "layer_order": "foreground",
+    "notes": [
+      "Manual anchor for standing turn comparison action.",
+      "Places handbag near the right hand/right hip region."
+    ]
+  }
 }

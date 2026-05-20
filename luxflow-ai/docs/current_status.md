@@ -10,7 +10,7 @@
 - model router
 - deterministic artifact store
 - placeholder hero still rendering
-- product-locked composite placeholder
+- product-locked composite v1 with manual anchor alpha overlay
 - thumbnail rendering
 - static artifact serving
 - golden recipe demo
@@ -26,10 +26,12 @@
 - prompt tuning contact-sheet script
 - hero-stage action prompts separated from final catalog action labels
 - empty-hand golden recipe for product-compositing prep
+- product-lock trace metadata with placement coordinates and freeze policy
 
 ## Not Yet Implemented
 
-- product-locked composite v1 with real source product imagery
+- pose-aware placement
+- shadows, edge blending, and relighting
 - ComfyUI route execution
 - LTX route execution
 - real video export
@@ -38,6 +40,12 @@
 - hosted fallback
 
 The project currently demonstrates request-to-artifact workflow architecture. Real image generation is optional, disabled by default, and limited to the hero-still stage.
+
+## Product-Locked Composite v1
+
+The pipeline now renders `product_locked_composite.png` by opening the hero still, loading the product layer from `product.image_path`, and placing it with the action's `composite_anchor`. Product pixels are controlled by the overlay layer. No diffusion, segmentation, relighting, or background removal is applied to the product.
+
+The trace records `manual_anchor_alpha_overlay_v1`, source path, anchor ID, placement coordinates, product dimensions, scale, rotation, `freeze_core_pixels: true`, and `destructive_diffusion_allowed: false`.
 
 ## Real Hero-Still Validation
 
