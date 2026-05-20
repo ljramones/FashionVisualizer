@@ -59,6 +59,27 @@ LUXFLOW_ENABLE_REAL_IMAGE_GENERATION=true python scripts/smoke_real_hero_still.p
 
 Observed result for the default model in this pass: dependencies installed, Apple `mps` was selected in an unrestricted run, and `black-forest-labs/FLUX.1-schnell` fell back because Hugging Face returned gated model access (`401`). The fallback still produced local artifacts and wrote timing, device, dependency status, and the error summary to `pipeline_trace.json`.
 
+Probe configured image models:
+
+```bash
+python scripts/probe_image_models.py
+```
+
+Observed local probe result: `stabilityai/sdxl-turbo` and `stabilityai/stable-diffusion-xl-base-1.0` produced real hero stills on Apple `mps`. FLUX.1-schnell still requires Hugging Face gated model access.
+
+Run a specific candidate without editing `.env`:
+
+```bash
+python scripts/run_golden_demo.py \
+  --real-image \
+  --model-id stabilityai/sdxl-turbo \
+  --width 512 \
+  --height 512 \
+  --steps 2 \
+  --guidance-scale 0.0 \
+  --device auto
+```
+
 Run frontend:
 
 ```bash

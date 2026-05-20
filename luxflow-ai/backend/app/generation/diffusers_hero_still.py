@@ -79,29 +79,44 @@ def resolve_device() -> str:
 def _prompt(recipe: SceneRecipe) -> str:
     return " ".join(
         [
-            recipe.compiled_prompt,
-            "adult editorial model",
-            "luxury catalog campaign still",
-            "product area left empty or placeholder-free",
-            "no visible brand logos",
+            "Luxury catalog campaign still.",
+            f"Adult editorial {recipe.model.gender_presentation} model.",
+            f"Scene: {recipe.location.name}, {recipe.location.lighting} lighting.",
+            f"Action: {recipe.action.name}.",
+            "Handbag area intentionally empty for later product-locked composite.",
+            "No visible brand logos.",
         ]
     )
 
 
-def _load_pipeline(model_id: str) -> Any:
+def _pipeline_load_kwargs(device: str) -> dict[str, Any]:
+    try:
+        import torch
+    except ImportError:
+        return {}
+
+    if device in {"cpu", "mps"}:
+        return {"torch_dtype": torch.float32}
+    if device == "cuda":
+        return {"torch_dtype": torch.float16}
+    return {}
+
+
+def _load_pipeline(model_id: str, device: str) -> Any:
+    kwargs = _pipeline_load_kwargs(device)
     if "FLUX" in model_id.upper():
         from diffusers import FluxPipeline
 
-        return FluxPipeline.from_pretrained(model_id)  # type: ignore[no-untyped-call]
+        return FluxPipeline.from_pretrained(model_id, **kwargs)  # type: ignore[no-untyped-call]
 
     try:
         from diffusers import AutoPipelineForText2Image
 
-        return AutoPipelineForText2Image.from_pretrained(model_id)  # type: ignore[no-untyped-call]
+        return AutoPipelineForText2Image.from_pretrained(model_id, **kwargs)  # type: ignore[no-untyped-call]
     except (ImportError, AttributeError):
         from diffusers import DiffusionPipeline
 
-        return DiffusionPipeline.from_pretrained(model_id)  # type: ignore[no-untyped-call]
+        return DiffusionPipeline.from_pretrained(model_id, **kwargs)  # type: ignore[no-untyped-call]
 
 
 def _invoke_pipeline(pipe: Any, recipe: SceneRecipe, generator: Any) -> Any:
@@ -179,7 +194,7 @@ def generate_hero_still_with_diffusers(
         if device == "cuda":
             notes.append("Using CUDA device for local generation.")
 
-        pipe = _load_pipeline(model_id)
+        pipe = _load_pipeline(model_id, device)
         pipe = pipe.to(device)
         generator_device = device if device in {"cuda", "cpu"} else "cpu"
         generator = torch.Generator(device=generator_device).manual_seed(recipe.seed)

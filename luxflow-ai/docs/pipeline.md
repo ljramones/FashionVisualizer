@@ -30,3 +30,9 @@ No ComfyUI workflow or video route is executed. Optional Diffusers hero-still ex
 ## Real Hero-Still Validation
 
 The default Diffusers model is `black-forest-labs/FLUX.1-schnell`. In the current validation pass, optional dependencies installed and the route attempted a real hero still, but Hugging Face returned gated model access (`401`). The pipeline did not fail the request; it rendered the placeholder hero still, continued product-lock composite and thumbnail creation, and persisted the failure reason in the trace.
+
+## Image Model Probe
+
+`scripts/probe_image_models.py` runs the same golden recipe through configured candidate models. Each candidate still uses `run_handbag_pipeline`, so any successful real hero still flows through the same artifact store, product-lock placeholder, thumbnail creation, evaluation placeholder, catalog entry, and pipeline trace.
+
+The current probe produced real hero stills with SDXL Turbo and SDXL base. The normal golden demo path was also verified with SDXL Turbo, so `assets/outputs/{request_hash}/hero_still.png` can now be a real Diffusers image while the product-locked composite, thumbnail, video placeholder, evaluation, and catalog entry remain unchanged.

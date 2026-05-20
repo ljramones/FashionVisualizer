@@ -1,5 +1,5 @@
+import argparse
 import json
-import sys
 
 from backend.app import config
 from backend.app.config import project_root
@@ -8,6 +8,39 @@ from backend.app.demo import load_golden_generation_request
 from backend.app.pipeline.handbag_pipeline import run_handbag_pipeline
 from backend.app.recipes.scene_recipe_compiler import compile_scene_recipe
 from backend.app.routing.model_router import choose_route
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run the LuxFlow AI golden recipe demo.")
+    parser.add_argument("--real-image", action="store_true", help="Enable real image generation.")
+    parser.add_argument("--model-id", help="Override LUXFLOW_IMAGE_MODEL_ID for this run.")
+    parser.add_argument("--width", type=int, help="Override generated image width.")
+    parser.add_argument("--height", type=int, help="Override generated image height.")
+    parser.add_argument("--steps", type=int, help="Override image inference steps.")
+    parser.add_argument("--guidance-scale", type=float, help="Override image guidance scale.")
+    parser.add_argument(
+        "--device",
+        choices=["auto", "mps", "cpu", "cuda"],
+        help="Override generation device selection.",
+    )
+    return parser.parse_args()
+
+
+def apply_cli_overrides(args: argparse.Namespace) -> None:
+    if args.real_image:
+        config.settings.enable_real_image_generation = True
+    if args.model_id is not None:
+        config.settings.image_model_id = args.model_id
+    if args.width is not None:
+        config.settings.image_width = args.width
+    if args.height is not None:
+        config.settings.image_height = args.height
+    if args.steps is not None:
+        config.settings.image_steps = args.steps
+    if args.guidance_scale is not None:
+        config.settings.image_guidance_scale = args.guidance_scale
+    if args.device is not None:
+        config.settings.image_device = args.device
 
 
 def run_golden_demo() -> CatalogEntry:
@@ -25,8 +58,7 @@ def _artifact_path(entry: CatalogEntry, kind: str) -> str:
 
 
 def main() -> None:
-    if "--real-image" in sys.argv:
-        config.settings.enable_real_image_generation = True
+    apply_cli_overrides(parse_args())
 
     entry = run_golden_demo()
     output_dir = project_root() / "assets/outputs" / entry.recipe_hash

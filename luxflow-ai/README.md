@@ -84,6 +84,8 @@ Key docs:
 - `docs/pipeline.md`: current placeholder artifact lifecycle.
 - `docs/product_preservation.md`: product-lock placeholder policy.
 - `docs/local_execution.md`: local setup and execution notes.
+- `docs/model_access.md`: model access, license notes, and probe workflow.
+- `docs/model_probe_results.md`: observed local model probe results.
 
 ## Run Backend
 
@@ -201,6 +203,27 @@ To retry after accepting model access and authenticating with Hugging Face:
 
 ```bash
 LUXFLOW_ENABLE_REAL_IMAGE_GENERATION=true python scripts/smoke_real_hero_still.py
+```
+
+## Image Model Probe
+
+Probe configured Diffusers candidates:
+
+```bash
+pip install -e ".[dev,generation]"
+python scripts/probe_image_models.py
+```
+
+The probe currently tests FLUX.1-schnell, SDXL Turbo, and SDXL base against the golden recipe. It records access failures, runtime failures, fallback behavior, selected device, duration, and output paths in `docs/model_probe_results.md`.
+
+Observed result: FLUX.1-schnell still requires gated Hugging Face access, while `stabilityai/sdxl-turbo` and `stabilityai/stable-diffusion-xl-base-1.0` both generated real hero stills on Apple `mps`. The normal golden demo path was also verified with SDXL Turbo, producing `assets/outputs/{request_hash}/hero_still.png` with `used_real_generation: true`.
+
+Run one working model manually:
+
+```bash
+LUXFLOW_ENABLE_REAL_IMAGE_GENERATION=true \
+LUXFLOW_IMAGE_MODEL_ID=<working_model_id> \
+python scripts/run_golden_demo.py
 ```
 
 ## Example Scene Recipe

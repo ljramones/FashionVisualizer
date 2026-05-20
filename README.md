@@ -23,6 +23,8 @@ Start with the project README:
 - [Local Execution](luxflow-ai/docs/local_execution.md)
 - [Tech Stack](luxflow-ai/docs/tech_stack.md)
 - [Product Preservation](luxflow-ai/docs/product_preservation.md)
+- [Model Access](luxflow-ai/docs/model_access.md)
+- [Model Probe Results](luxflow-ai/docs/model_probe_results.md)
 - [Benchmark Results](luxflow-ai/docs/benchmark_results.md)
 - [Roadmap](luxflow-ai/docs/roadmap.md)
 
