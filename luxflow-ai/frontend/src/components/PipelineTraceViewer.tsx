@@ -71,6 +71,9 @@ export default function PipelineTraceViewer({ entry }: PipelineTraceViewerProps)
             <span>attempted: {String(trace.hero_still_generation.generation_attempted)}</span>
             <span>used real generation: {String(trace.hero_still_generation.used_real_generation)}</span>
             <span>profile: {trace.hero_still_generation.profile_id ?? "n/a"}</span>
+            <span>
+              variant: {trace.hero_still_generation.prompt_variant_id ?? "n/a"}
+            </span>
             <span>model: {trace.hero_still_generation.model_id}</span>
             <span>device: {trace.hero_still_generation.device}</span>
             <span>
@@ -88,6 +91,9 @@ export default function PipelineTraceViewer({ entry }: PipelineTraceViewerProps)
             <span>
               strategy: {trace.hero_still_generation.prompt_strategy ?? "n/a"}
             </span>
+            <span>
+              target: {trace.hero_still_generation.composition_target_summary ?? "n/a"}
+            </span>
             <span>fallback used: {String(trace.hero_still_generation.fallback_used)}</span>
             <span>duration: {trace.hero_still_generation.duration_seconds ?? "n/a"}s</span>
             <span>
@@ -100,6 +106,9 @@ export default function PipelineTraceViewer({ entry }: PipelineTraceViewerProps)
             ) : null}
             {trace.hero_still_generation.positive_prompt_preview ? (
               <small>{trace.hero_still_generation.positive_prompt_preview}</small>
+            ) : null}
+            {trace.hero_still_generation.negative_prompt_preview ? (
+              <small>{trace.hero_still_generation.negative_prompt_preview}</small>
             ) : null}
             <small>{trace.hero_still_generation.notes.join(" ")}</small>
             {trace.hero_still_generation.error ? (

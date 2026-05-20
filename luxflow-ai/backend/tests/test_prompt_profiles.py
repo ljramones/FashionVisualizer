@@ -24,13 +24,20 @@ def test_prompt_includes_scene_context() -> None:
 
 
 def test_prompt_avoids_exact_product_generation() -> None:
-    bundle = build_hero_still_prompt(_recipe(), "sdxl_turbo_preview")
+    bundle = build_hero_still_prompt(
+        _recipe(),
+        "sdxl_turbo_preview",
+        "editorial_empty_hand_v1",
+    )
     prompt = bundle.positive_prompt.lower()
 
     assert "exact black structured handbag" not in prompt
-    assert "empty space" in prompt
+    assert "right hand clear" in prompt
     assert "product composited later" in prompt
     assert "no prominent bag" in prompt
+    assert "right hand" in prompt
+    assert bundle.prompt_variant_id == "editorial_empty_hand_v1"
+    assert "right_hand" in bundle.composition_target_summary
 
 
 def test_negative_prompt_contains_product_preservation_terms() -> None:
@@ -48,5 +55,7 @@ def test_negative_prompt_contains_product_preservation_terms() -> None:
         "flicker",
         "fake brand logo",
         "malformed handbag",
+        "purse",
+        "bag",
     ]:
         assert term in negative

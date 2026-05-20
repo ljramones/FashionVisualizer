@@ -4,5 +4,8 @@
   "prompt_fragment": "The model walks slowly while carrying the handbag naturally at the side.",
   "camera_motion": "slow forward dolly with subtle handheld steadiness",
   "product_interaction": "bag remains visible, stable, and close to the model hand",
-  "loop_policy": "ping_pong"
+  "loop_policy": "ping_pong",
+  "product_anchor_target": "right_hand",
+  "composition_space_hint": "clear empty space near the model's right hand and right hip for later handbag placement",
+  "occlusion_hint": "hand visible, relaxed fingers, no object currently held"
 }

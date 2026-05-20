@@ -18,6 +18,7 @@ AspectRatio = Literal["1:1", "9:16"]
 GenderPresentation = Literal["male", "female", "neutral"]
 ModelSource = Literal["synthetic", "licensed_reference", "anonymous"]
 LoopPolicy = Literal["ping_pong", "none"]
+ProductAnchorTarget = Literal["right_hand", "left_hand", "shoulder", "right_hip", "left_hip"]
 
 
 class ProductRef(BaseModel):
@@ -53,6 +54,9 @@ class ActionRef(BaseModel):
     camera_motion: str
     product_interaction: str
     loop_policy: LoopPolicy
+    product_anchor_target: ProductAnchorTarget | None = None
+    composition_space_hint: str | None = None
+    occlusion_hint: str | None = None
 
 
 class GenerationRequest(BaseModel):

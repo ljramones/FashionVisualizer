@@ -92,6 +92,8 @@ export interface PipelineTrace {
     supports_negative_prompt?: boolean | null;
     positive_prompt_preview?: string | null;
     negative_prompt_preview?: string | null;
+    prompt_variant_id?: string | null;
+    composition_target_summary?: string | null;
     aspect_ratio_requested?: string | null;
     aspect_ratio_resolved?: string | null;
     prompt_strategy?: string | null;

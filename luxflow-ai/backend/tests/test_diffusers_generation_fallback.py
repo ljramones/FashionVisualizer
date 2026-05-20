@@ -52,6 +52,8 @@ def test_missing_diffusers_falls_back_cleanly(tmp_path, monkeypatch) -> None:
                 "profile_id": "sdxl_turbo_preview",
                 "positive_prompt_preview": "positive preview",
                 "negative_prompt_preview": "negative preview",
+                "prompt_variant_id": "editorial_empty_hand_v1",
+                "composition_target_summary": "right_hand: clear product space",
                 "width": 512,
                 "height": 768,
                 "steps": 2,
@@ -91,6 +93,8 @@ def test_missing_diffusers_falls_back_cleanly(tmp_path, monkeypatch) -> None:
     assert trace["hero_still_generation"]["prompt_strategy"] == (
         "product_empty_scene_for_later_composite"
     )
+    assert trace["hero_still_generation"]["prompt_variant_id"] == "editorial_empty_hand_v1"
+    assert "right_hand" in trace["hero_still_generation"]["composition_target_summary"]
     assert "diffusers missing in test" in trace["hero_still_generation"]["notes"]
 
 

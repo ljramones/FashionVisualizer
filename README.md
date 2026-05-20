@@ -25,6 +25,8 @@ Start with the project README:
 - [Product Preservation](luxflow-ai/docs/product_preservation.md)
 - [Model Access](luxflow-ai/docs/model_access.md)
 - [Model Probe Results](luxflow-ai/docs/model_probe_results.md)
+- [Hero-Still Review Checklist](luxflow-ai/docs/hero_still_review_checklist.md)
+- [Prompt Tuning Results](luxflow-ai/docs/prompt_tuning_results.md)
 - [Benchmark Results](luxflow-ai/docs/benchmark_results.md)
 - [Roadmap](luxflow-ai/docs/roadmap.md)
 

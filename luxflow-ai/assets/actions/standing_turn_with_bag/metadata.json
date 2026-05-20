@@ -4,5 +4,8 @@
   "prompt_fragment": "The model performs a small standing turn to present the handbag silhouette.",
   "camera_motion": "locked camera with gentle push-in",
   "product_interaction": "bag faces camera during the turn and remains unobstructed",
-  "loop_policy": "ping_pong"
+  "loop_policy": "ping_pong",
+  "product_anchor_target": "right_hand",
+  "composition_space_hint": "clear space beside the model's right hip for later handbag placement",
+  "occlusion_hint": "right hand visible with relaxed fingers and no object currently held"
 }

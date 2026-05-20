@@ -86,6 +86,8 @@ Key docs:
 - `docs/local_execution.md`: local setup and execution notes.
 - `docs/model_access.md`: model access, license notes, and probe workflow.
 - `docs/model_probe_results.md`: observed local model probe results.
+- `docs/hero_still_review_checklist.md`: manual review checklist for prompt tuning.
+- `docs/prompt_tuning_results.md`: latest prompt variant contact-sheet run.
 
 ## Run Backend
 
@@ -240,6 +242,21 @@ python scripts/run_golden_demo.py \
 ## Hero-Still Prompt Strategy
 
 The generated hero still is a scene canvas, not the final product visualization. The prompt asks Diffusers for the adult model, location, action, lighting, and campaign framing while intentionally avoiding the exact handbag. The prompt leaves natural hand placement and empty space for later product-locked compositing.
+
+## Hero-Still Prompt Tuning
+
+Prompt variants target usable composition space for later handbag placement. Run a small review grid with:
+
+```bash
+python scripts/tune_hero_prompts.py \
+  --profile-id sdxl_turbo_preview \
+  --width 512 \
+  --height 768 \
+  --steps 2 \
+  --seeds 42 43
+```
+
+Generated images and contact sheets stay under ignored `assets/outputs/prompt_tuning/`. The tracked summary in `docs/prompt_tuning_results.md` is intended for manual review, not automated scoring.
 
 ## Aspect Ratio Handling
 

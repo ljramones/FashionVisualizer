@@ -84,6 +84,31 @@ python scripts/run_golden_demo.py \
 
 The real hero still is a product-empty scene base. It should generate the adult model, location, walking/standing action, lighting, mood, and catalog framing. It should not generate the exact handbag. The prompt leaves natural hand placement and empty space near one hand so the later product-locked composite can insert the real product layer.
 
+Run a prompt variant directly:
+
+```bash
+python scripts/run_golden_demo.py \
+  --real-image \
+  --profile-id sdxl_turbo_preview \
+  --prompt-variant editorial_empty_hand_v1 \
+  --width 512 \
+  --height 768 \
+  --steps 2
+```
+
+Run a prompt tuning grid:
+
+```bash
+python scripts/tune_hero_prompts.py \
+  --profile-id sdxl_turbo_preview \
+  --width 512 \
+  --height 768 \
+  --steps 2 \
+  --seeds 42 43
+```
+
+The contact sheet and generated images are written under ignored `assets/outputs/prompt_tuning/`. Use `docs/hero_still_review_checklist.md` to review the tracked `docs/prompt_tuning_results.md` table.
+
 ## Aspect Ratio Handling
 
 `1:1` and `9:16` are supported at the public contract level. The Diffusers route resolves concrete dimensions per image profile and mode. Preview defaults stay small for local iteration, such as `512x512` for square and `512x768` for portrait. Explicit CLI dimensions are accepted when both width and height are provided and both are multiples of 8.

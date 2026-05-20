@@ -21,3 +21,5 @@ Run `python scripts/probe_image_models.py` to test configured candidates against
 Current result: SDXL Turbo and SDXL base generated real hero stills on `mps`; FLUX.1-schnell fell back due to gated model access.
 
 The current profile-aware benchmark records prompt profile, output dimensions, steps, guidance scale, and negative prompt support. SDXL Turbo is the recommended fast local smoke profile for portrait `9:16` work before product compositing.
+
+Prompt tuning is currently manual. `scripts/tune_hero_prompts.py` creates contact sheets for variant/seed review and updates `docs/prompt_tuning_results.md`; it does not produce automated quality scores.

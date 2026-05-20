@@ -14,6 +14,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the LuxFlow AI golden recipe demo.")
     parser.add_argument("--real-image", action="store_true", help="Enable real image generation.")
     parser.add_argument("--profile-id", help="Use a named image generation profile.")
+    parser.add_argument("--prompt-variant", help="Use a named hero-still prompt variant.")
     parser.add_argument("--model-id", help="Override LUXFLOW_IMAGE_MODEL_ID for this run.")
     parser.add_argument("--width", type=int, help="Override generated image width.")
     parser.add_argument("--height", type=int, help="Override generated image height.")
@@ -32,6 +33,8 @@ def apply_cli_overrides(args: argparse.Namespace) -> None:
         config.settings.enable_real_image_generation = True
     if args.profile_id is not None:
         config.settings.image_profile_id = args.profile_id
+    if args.prompt_variant is not None:
+        config.settings.image_prompt_variant_id = args.prompt_variant
     if args.model_id is not None:
         config.settings.image_model_id = args.model_id
     if args.width is not None:
@@ -80,6 +83,7 @@ def main() -> None:
     print(f"used_real_generation: {hero_generation.get('used_real_generation')}")
     print(f"model_id: {hero_generation.get('model_id')}")
     print(f"profile_id: {hero_generation.get('profile_id')}")
+    print(f"prompt_variant_id: {hero_generation.get('prompt_variant_id')}")
     print(f"device: {hero_generation.get('device')}")
     print(f"width: {hero_generation.get('width')}")
     print(f"height: {hero_generation.get('height')}")

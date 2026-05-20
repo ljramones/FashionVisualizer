@@ -41,6 +41,12 @@ The current probe produced real hero stills with SDXL Turbo and SDXL base. The n
 
 The hero-still route now builds a product-empty scene prompt. It asks for the adult editorial model, selected location, selected action, lighting, mood, natural hands, and luxury catalog framing. It explicitly avoids prominent bags, branded accessories, and visible logos because the handbag is intended to be composited later through the product-lock layer.
 
+Prompt variants add composition-specific pressure without changing the artifact lifecycle. Examples include `editorial_empty_hand_v1`, `natural_side_carry_space_v1`, and `minimal_accessory_free_v1`. Pipeline traces record the selected variant and composition target summary.
+
+## Hero-Still Prompt Tuning
+
+`scripts/tune_hero_prompts.py` runs a small grid of prompt variants and seeds through the existing Diffusers hero-still route, then writes an ignored contact sheet and a tracked Markdown review table. Manual review is expected because the current pipeline has no vision-based quality scorer.
+
 ## Aspect Ratio Handling
 
 The route resolves requested aspect ratio into model-friendly dimensions through image profiles. The golden `9:16` request can now produce a portrait `512x768` SDXL Turbo image instead of a square smoke output. Larger quality sizes remain profile-specific and should be benchmarked before becoming defaults.

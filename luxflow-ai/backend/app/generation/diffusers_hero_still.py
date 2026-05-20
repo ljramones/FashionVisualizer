@@ -24,6 +24,8 @@ class GenerationResult(BaseModel):
     supports_negative_prompt: bool | None = None
     positive_prompt_preview: str | None = None
     negative_prompt_preview: str | None = None
+    prompt_variant_id: str | None = None
+    composition_target_summary: str | None = None
     aspect_ratio_requested: str | None = None
     aspect_ratio_resolved: str | None = None
     prompt_strategy: str = "product_empty_scene_for_later_composite"
@@ -132,7 +134,11 @@ def _resolve_generation_parameters(recipe: SceneRecipe) -> tuple[
         if settings.image_guidance_scale != 0.0
         else profile.default_guidance_scale
     )
-    prompt_bundle = build_hero_still_prompt(recipe, profile.profile_id)
+    prompt_bundle = build_hero_still_prompt(
+        recipe,
+        profile.profile_id,
+        settings.image_prompt_variant_id,
+    )
     return profile, prompt_bundle, width, height, steps, guidance_scale
 
 
@@ -216,6 +222,8 @@ def generate_hero_still_with_diffusers(
         "supports_negative_prompt": profile.supports_negative_prompt,
         "positive_prompt_preview": _preview(prompt_bundle.positive_prompt),
         "negative_prompt_preview": _preview(prompt_bundle.negative_prompt),
+        "prompt_variant_id": prompt_bundle.prompt_variant_id,
+        "composition_target_summary": prompt_bundle.composition_target_summary,
         "aspect_ratio_requested": recipe.aspect_ratio,
         "aspect_ratio_resolved": _aspect_ratio(width, height),
         "prompt_profile_used": profile.profile_id,
